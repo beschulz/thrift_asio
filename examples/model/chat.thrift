@@ -23,6 +23,8 @@ service chat_client
     /// called, if claiming the desired user name is not possible
     oneway void on_set_user_name_failed(1:string why);
 
+    oneway void on_set_user_name_succeeded();
+
     /// called, when a chat-message is received
     oneway void on_message(1:string from_user, 2:string message);
 
