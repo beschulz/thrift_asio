@@ -56,8 +56,16 @@ add_custom_target(
 )
 
 file(GLOB examples RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/examples" "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp")
-file(GLOB thrift_sources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/*.cpp")
-list(REMOVE_ITEM thrift_sources ${skeleton_sources})
+#file(GLOB thrift_sources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/*.cpp")
+#list(REMOVE_ITEM thrift_sources ${skeleton_sources})
+
+set(
+    thrift_sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_client.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_server.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_constants.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_types.cpp"
+)
 
 foreach(example_file ${examples})
     get_filename_component(example_name ${example_file} NAME_WE)
