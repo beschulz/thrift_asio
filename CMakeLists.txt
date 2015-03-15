@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.4)
-project(asio_service_discovery)
+project(thrift_asio)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
 
@@ -39,6 +39,7 @@ add_custom_target(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples/model
     COMMENT "Compiling thrift model" VERBATIM
+    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
 )
 
 set(
@@ -50,14 +51,12 @@ set(
 add_custom_target(
     thrift-compile-and-cleanup
     COMMAND rm ${skeleton_sources}
-    DEPENDS thrift-compile
+    DEPENDS thrift-compile ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/
     COMMENT "removing unneeded thrift output files" VERBATIM
 )
 
 file(GLOB examples RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/examples" "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp")
-#file(GLOB thrift_sources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/*.cpp")
-#list(REMOVE_ITEM thrift_sources ${skeleton_sources})
 
 set(
     thrift_sources
@@ -71,7 +70,7 @@ foreach(example_file ${examples})
     get_filename_component(example_name ${example_file} NAME_WE)
 
     add_executable(${example_name} "${CMAKE_CURRENT_SOURCE_DIR}/examples/${example_name}" ${thrift_sources})
-    target_include_directories(${test_name} PUBLIC "./include" "./examples/model/gen-cpp")
+    target_include_directories(${example_name} PUBLIC "./include" "./examples/model/gen-cpp")
     target_link_libraries(${example_name} "boost_system" "thrift")
     add_dependencies(${example_name} thrift-compile-and-cleanup)
 endforeach(example_file)
