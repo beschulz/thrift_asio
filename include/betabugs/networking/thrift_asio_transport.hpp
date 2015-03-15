@@ -204,8 +204,6 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	}
 
   protected:
-	event_handlers* event_handlers_; ///< handles events like on_error, etc.
-
 	/// enum to represent the state-machine of the connection
 	enum State
 	{
@@ -216,8 +214,8 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	};
 
 	State state_ = CLOSED; ///< the state of this transport
-
 	socket_ptr socket_; ///< the underlying socket
+	event_handlers* event_handlers_; ///< handles events like on_error, etc.
 
   private:
 	std::string incomming_bytes_;
