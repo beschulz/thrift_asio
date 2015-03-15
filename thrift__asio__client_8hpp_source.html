@@ -3,14 +3,14 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Asio Service Discovery: Main Page : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
+    <meta name="description" content="Asio Service Discovery: thrift_asio_client.hpp Source File : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
     <!-- For Mobile Devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
     <meta name="generator" content="Doxygen 1.8.6"/>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <title>Asio Service Discovery: Main Page</title>
+    <title>Asio Service Discovery: thrift_asio_client.hpp Source File</title>
     <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
     <script type="text/javascript" src="dynsections.js"></script>
     <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -39,7 +39,7 @@
 <nav class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand">Main Page</a>
+            <a class="navbar-brand">thrift_asio_client.hpp Source File</a>
         </div>
     </div>
 </nav>
@@ -56,9 +56,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -78,7 +78,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-</div><!-- top -->
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
+    </ul>
+  </div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -93,26 +97,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_83f86263fb9236a44ab43092ca432054.html">betabugs</a></li><li class="navelem"><a class="el" href="dir_35371287e0253107d33147aec810d54b.html">networking</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">Asio Service Discovery Documentation</div>  </div>
+<div class="title">thrift_asio_client.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h2>motivation</h2>
-<h3>non-blocking / non-locking</h3>
-<p>in time sensitive or "real time" applications, it might be desirable to use the RPC mechanisms of <a href="https://thrift.apache.org/">apache thrift</a> in a non-blocking, asynchronous manner.</p>
-<p>By using <a href="http://www.boost.org/doc/libs/release/libs/asio/">boost::asio</a> for the implementation for the client transport and server no extra threads have to be created. The non-blocking server can serve multiple clients and can be polled/updated from the main thread (or any other thread that is convenient).</p>
-<p>another advantage is, that the application developer is in control of when exactly the RPC callbacks are called.</p>
-<h3>bidirectional</h3>
-<p>Apache thrift by design employs a client server model. That is, a client initiates a request, the server fulfills it. There is no obvious way to perform bidirectional communication other than via the response to a request.</p>
-<p>This implementation enables bidirectional communication without creating another network connection from the server to the client. For this to work, all rpc functions have to be marked as 'oneway' to keep the beck-channel free of packets.</p>
-<h2>design</h2>
-<p>This library is header-only. Also C++11 stl data-types are used in precedence over boosts wherever possible.</p>
-<h2>License</h2>
-<p>This library is Distributed under the <a href="http://www.boost.org/LICENSE_1_0.txt">Boost Software License, Version 1.0</a> .</p>
-<h2>Bugs</h2>
-<p>In case you find any bugs, please don't hesitate to contact me. Also pull-requests are highly apprechiated. </p>
-</div></div><!-- contents -->
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// Created by Benjamin Schulz on 15/03/15.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#ifndef _ASIO_SERVICE_DISCOVERY_THRIFT_ASIO_CLIENT_HPP_</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _ASIO_SERVICE_DISCOVERY_THRIFT_ASIO_CLIENT_HPP_</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>betabugs{</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>networking{</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classbetabugs_1_1networking_1_1thrift__asio__client.html">   14</a></span>&#160;<span class="keyword">class </span><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__client.html">thrift_asio_client</a></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;};</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#endif //_ASIO_SERVICE_DISCOVERY_THRIFT_ASIO_CLIENT_HPP_</span></div>
+<div class="ttc" id="classbetabugs_1_1networking_1_1thrift__asio__client_html"><div class="ttname"><a href="classbetabugs_1_1networking_1_1thrift__asio__client.html">betabugs::networking::thrift_asio_client</a></div><div class="ttdef"><b>Definition:</b> thrift_asio_client.hpp:14</div></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
 <!-- start footer part -->
 </div>

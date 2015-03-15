@@ -3,14 +3,14 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Asio Service Discovery: Main Page : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
+    <meta name="description" content="Asio Service Discovery: Class Index : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
     <!-- For Mobile Devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
     <meta name="generator" content="Doxygen 1.8.6"/>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <title>Asio Service Discovery: Main Page</title>
+    <title>Asio Service Discovery: Class Index</title>
     <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
     <script type="text/javascript" src="dynsections.js"></script>
     <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -39,7 +39,7 @@
 <nav class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand">Main Page</a>
+            <a class="navbar-brand">Class Index</a>
         </div>
     </div>
 </nav>
@@ -56,8 +56,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
@@ -78,6 +78,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li class="current"><a href="classes.html"><span>Class&#160;Index</span></a></li>
+    </ul>
+  </div>
 </div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -95,24 +101,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Asio Service Discovery Documentation</div>  </div>
+<div class="title">Class Index</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h2>motivation</h2>
-<h3>non-blocking / non-locking</h3>
-<p>in time sensitive or "real time" applications, it might be desirable to use the RPC mechanisms of <a href="https://thrift.apache.org/">apache thrift</a> in a non-blocking, asynchronous manner.</p>
-<p>By using <a href="http://www.boost.org/doc/libs/release/libs/asio/">boost::asio</a> for the implementation for the client transport and server no extra threads have to be created. The non-blocking server can serve multiple clients and can be polled/updated from the main thread (or any other thread that is convenient).</p>
-<p>another advantage is, that the application developer is in control of when exactly the RPC callbacks are called.</p>
-<h3>bidirectional</h3>
-<p>Apache thrift by design employs a client server model. That is, a client initiates a request, the server fulfills it. There is no obvious way to perform bidirectional communication other than via the response to a request.</p>
-<p>This implementation enables bidirectional communication without creating another network connection from the server to the client. For this to work, all rpc functions have to be marked as 'oneway' to keep the beck-channel free of packets.</p>
-<h2>design</h2>
-<p>This library is header-only. Also C++11 stl data-types are used in precedence over boosts wherever possible.</p>
-<h2>License</h2>
-<p>This library is Distributed under the <a href="http://www.boost.org/LICENSE_1_0.txt">Boost Software License, Version 1.0</a> .</p>
-<h2>Bugs</h2>
-<p>In case you find any bugs, please don't hesitate to contact me. Also pull-requests are highly apprechiated. </p>
-</div></div><!-- contents -->
+<div class="qindex"><a class="qindex" href="#letter_T">T</a></div>
+<table style="margin: 10px; white-space: nowrap;" align="center" width="95%" border="0" cellspacing="0" cellpadding="0">
+<tr><td rowspan="2" valign="bottom"><a name="letter_t"></a><table border="0" cellspacing="0" cellpadding="0"><tr><td><div class="ah">&#160;&#160;t&#160;&#160;</div></td></tr></table>
+</td><td valign="top"><a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__server.html">thrift_asio_server</a> (betabugs::networking)&#160;&#160;&#160;</td><td></td></tr>
+<tr><td></td><td></td></tr>
+<tr><td valign="top"><a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__client.html">thrift_asio_client</a> (betabugs::networking)&#160;&#160;&#160;</td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td></tr>
+</table>
+<div class="qindex"><a class="qindex" href="#letter_T">T</a></div>
+</div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
 <!-- start footer part -->
 </div>
