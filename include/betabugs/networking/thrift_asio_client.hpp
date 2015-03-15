@@ -29,6 +29,7 @@ class thrift_asio_client
 	  , public thrift_asio_client_transport::event_handlers
 {
   public:
+	/// creates a thrift_asio_client and tries to connect to host_name:service_name
 	thrift_asio_client(
 		boost::asio::io_service& io_service,
 		const std::string& host_name,
@@ -52,6 +53,7 @@ class thrift_asio_client
 		protocol_->getTransport()->open();
 	}
 
+	/// process incoming traffic
 	void update()
 	{
 		while (transport_->isOpen() && transport_->peek())
@@ -60,11 +62,13 @@ class thrift_asio_client
 		}
 	}
 
+	/// close the connection and connect to host_name:service_name
 	void connect_to(const std::string& host_name, const std::string service_name)
 	{
 		transport_->connect_to(host_name, service_name);
 	}
 
+	/// reconnect in seconds seconds
 	void reconnect_in(float seconds)
 	{
 		auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
@@ -85,7 +89,7 @@ class thrift_asio_client
 	boost::shared_ptr <thrift_asio_client_transport> transport_;
 	boost::shared_ptr <apache::thrift::protocol::TProtocol> protocol_;
   protected:
-	ClientType client_;
+	ClientType client_; ///< the client used to communicate with the server
 };
 
 /** \example example_client.cpp

@@ -19,7 +19,7 @@ namespace networking {
 /*!
 * thrift transport that employs a boost::asio::socket.
 *
-* If you want name resolution, it might be easier to use thrift_asio_resolving_transport
+* If you want name resolution, it might be easier to use thrift_asio_client_transport
 *
 * */
 class thrift_asio_transport : public apache::thrift::transport::TVirtualTransport<thrift_asio_transport>
@@ -30,14 +30,17 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	* */
 	struct event_handlers
 	{
+		/// get invoked when an error occurs
 		virtual void on_error(const boost::system::error_code& /*ec*/)
 		{
 		}
 
+		/// gets invoked when the transport was successfully connected
 		virtual void on_connected()
 		{
 		}
 
+		/// gets invoked when the transport is disconnected
 		virtual void on_disconnected()
 		{
 		}
@@ -51,8 +54,19 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 		: socket_(socket)
 		, event_handlers_(event_handlers)
 	{
+		assert(event_handlers);
 	};
 
+
+	/**
+   * Attempt to read up to the specified number of bytes into the string.
+   *
+   * This does not block.
+   *
+   * @param buf  Reference to the location to write the data
+   * @param len  How many bytes to read
+   * @return How many bytes were actually read
+   */
 	uint32_t read(uint8_t* buf, uint32_t len)
 	{
 		auto bytes_to_copy = std::min<size_t>(len, incomming_bytes_.size());
@@ -71,16 +85,25 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 		return bytes_to_copy;
 	}
 
+	/// the number of bytes, that have been received on not yet read()
 	size_t available_bytes() const
 	{
 		return incomming_bytes_.size();
 	}
 
-	uint32_t readAll(uint8_t* buf, uint32_t len)
+	/*uint32_t readAll(uint8_t* buf, uint32_t len)
 	{
 		return read(buf, len);
-	}
+	}*/
 
+	/**
+	* asynchronously sends len bytes from buf.
+	*
+	* In case of error, the event_handler::on_error will be invoked.
+	*
+	* @param buf  The data to write out
+	* @param len  number of bytes to read from buf
+	*/
 	void write(const uint8_t* buf, uint32_t len)
 	{
 		auto holder = boost::make_shared<std::string>(buf, buf + len);
@@ -108,21 +131,29 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	{
 	}*/
 
+	/// return true unless an error occured or the transport was closed
 	virtual bool isOpen() override
 	{
 		return state_ == OPEN;
 	}
 
+	/*!
+	* return true, if the transport is closed.
+	* It returns false if the connection is open
+	* or name resolution is in progress.
+	*/
 	bool isClosed()
 	{
 		return state_ == CLOSED;
 	}
 
+	/// return true, if there is data available to be processed
 	virtual bool peek() override
 	{
 		return isOpen() && !incomming_bytes_.empty();
 	}
 
+	/// opens the transport
 	virtual void open() override
 	{
 		event_handlers_->on_connected();
@@ -142,6 +173,7 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 		);
 	}
 
+	/// closes the transport
 	virtual void close() override
 	{
 		if (state_ == OPEN)
@@ -158,27 +190,38 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	}
 
 
+	/**
+	* Returns the origin of the transports call. The value depends on the
+	* transport used. An IP based transport for example will return the
+	* IP address of the client making the request.
+	* If the transport doesn't know the origin Unknown is returned.
+	*
+	* The returned value can be used in a log message for example
+	*/
 	virtual const std::string getOrigin() override
 	{
 		return socket_->remote_endpoint().address().to_string() + ":" + std::to_string(socket_->remote_endpoint().port());
 	}
 
   protected:
-	socket_ptr socket_;
-	std::string incomming_bytes_;
-	event_handlers* event_handlers_;
+	event_handlers* event_handlers_; ///< handles events like on_error, etc.
 
+	/// enum to represent the state-machine of the connection
 	enum State
 	{
-		CLOSED,
-		CONNECTING,
-		RESOLVING,
-		OPEN
+		CLOSED,      ///< the transport is closed
+		CONNECTING,  ///< the transport is currently connecting
+		RESOLVING,   ///< we're currently trying to resolve host_name:service_name
+		OPEN         ///< the transport is open and ready for communication
 	};
 
-	State state_ = CLOSED;
+	State state_ = CLOSED; ///< the state of this transport
+
+	socket_ptr socket_; ///< the underlying socket
 
   private:
+	std::string incomming_bytes_;
+
 	void on_receive(
 		const boost::system::error_code& ec,
 		std::shared_ptr<std::array<char, 1024>> receive_buffer,
