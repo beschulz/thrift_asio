@@ -3,14 +3,14 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Asio Service Discovery: betabugs::networking::thrift_asio_server Class Reference : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
+    <meta name="description" content="Thrift Asio: betabugs::networking::thrift_asio_server&lt; HandlerType &gt; Class Template Reference : Asynchronous client and server for apache thrift implemented via boost::asio">
     <!-- For Mobile Devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
     <meta name="generator" content="Doxygen 1.8.6"/>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <title>Asio Service Discovery: betabugs::networking::thrift_asio_server Class Reference</title>
+    <title>Thrift Asio: betabugs::networking::thrift_asio_server&lt; HandlerType &gt; Class Template Reference</title>
     <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
     <script type="text/javascript" src="dynsections.js"></script>
     <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -28,8 +28,8 @@
 <div id="header_wrap" class="outer">
     <header class="inner">
         <a id="forkme_banner" href="https://github.com/beschulz/asio_service_discovery">View on GitHub</a>
-        <h1 id="project_title">Asio Service Discovery </h1>
-        <h2 id="project_tagline">Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.</h2>
+        <h1 id="project_title">Thrift Asio </h1>
+        <h2 id="project_tagline">Asynchronous client and server for apache thrift implemented via boost::asio</h2>
         <section id="downloads">
             <a class="zip_download_link" href="https://github.com/beschulz/asio_service_discovery/zipball/master">Download this project as a .zip file</a>
             <a class="tar_download_link" href="https://github.com/beschulz/asio_service_discovery/tarball/master">Download this project as a tar.gz file</a>
@@ -39,7 +39,7 @@
 <nav class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand">betabugs::networking::thrift_asio_server Class Reference</a>
+            <a class="navbar-brand">betabugs::networking::thrift_asio_server&lt; HandlerType &gt; Class Template Reference</a>
         </div>
     </div>
 </nav>
@@ -82,6 +82,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
       <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -89,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -104,15 +106,85 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="classbetabugs_1_1networking_1_1thrift__asio__server-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">betabugs::networking::thrift_asio_server Class Reference</div>  </div>
+<div class="title">betabugs::networking::thrift_asio_server&lt; HandlerType &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="thrift__asio__server_8hpp_source.html">thrift_asio_server.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ad3ff92b11c76beeb66a7e1f5d7695169"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__server.html#ad3ff92b11c76beeb66a7e1f5d7695169">serve</a> (boost::asio::io_service &amp;io_service, TProcessor &amp;processor, Handler_ptr handler, short port)</td></tr>
+<tr class="separator:ad3ff92b11c76beeb66a7e1f5d7695169"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Use this class on the server </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+<div class="textblock"><h3>template&lt;typename HandlerType&gt;<br/>
+class betabugs::networking::thrift_asio_server&lt; HandlerType &gt;</h3>
+
+<p>Use this class on the server </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="example_server_8cpp-example.html#_a4">example_server.cpp</a>.</dd>
+</dl></div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ad3ff92b11c76beeb66a7e1f5d7695169"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename HandlerType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void <a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__server.html">betabugs::networking::thrift_asio_server</a>&lt; HandlerType &gt;::serve </td>
+          <td>(</td>
+          <td class="paramtype">boost::asio::io_service &amp;&#160;</td>
+          <td class="paramname"><em>io_service</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TProcessor &amp;&#160;</td>
+          <td class="paramname"><em>processor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Handler_ptr&#160;</td>
+          <td class="paramname"><em>handler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>port</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>call this to start listening for incoming connections. This call is non blocking. To actually service the clients, make sure, that you run/poll the io_service, i.e.</p>
+<div class="fragment"><div class="line"><span class="comment">// in a &quot;realtime&quot; context (game/audio-processor/etc.)</span></div>
+<div class="line"><span class="keywordtype">void</span> call_me_once_per_frame()</div>
+<div class="line">{</div>
+<div class="line">  <span class="comment">// drain outstanding handlers</span></div>
+<div class="line">  <span class="keywordflow">while</span> (io_service.poll_one());</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The nice thing about this is, that you RCP-calls will be made from the thread that is calling call_me_once_per_frame(). This means, you'll need no (or a lot less) locking. This is much more suitable for a "realtime" environment. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="thrift__asio__server_8hpp_source.html">thrift_asio_server.hpp</a></li>
 </ul>
 </div><!-- contents -->
@@ -131,7 +203,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </footer>
 </div>
 <!--hr class="footer"/><address class="footer"><small>
-Generated on Sun Mar 15 2015 19:11:49 for Asio Service Discovery by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Mar 15 2015 22:23:15 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address-->

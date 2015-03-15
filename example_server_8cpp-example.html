@@ -3,14 +3,14 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Asio Service Discovery: example_server.cpp : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
+    <meta name="description" content="Thrift Asio: example_server.cpp : Asynchronous client and server for apache thrift implemented via boost::asio">
     <!-- For Mobile Devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
     <meta name="generator" content="Doxygen 1.8.6"/>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <title>Asio Service Discovery: example_server.cpp</title>
+    <title>Thrift Asio: example_server.cpp</title>
     <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
     <script type="text/javascript" src="dynsections.js"></script>
     <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -28,8 +28,8 @@
 <div id="header_wrap" class="outer">
     <header class="inner">
         <a id="forkme_banner" href="https://github.com/beschulz/asio_service_discovery">View on GitHub</a>
-        <h1 id="project_title">Asio Service Discovery </h1>
-        <h2 id="project_tagline">Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.</h2>
+        <h1 id="project_title">Thrift Asio </h1>
+        <h2 id="project_tagline">Asynchronous client and server for apache thrift implemented via boost::asio</h2>
         <section id="downloads">
             <a class="zip_download_link" href="https://github.com/beschulz/asio_service_discovery/zipball/master">Download this project as a .zip file</a>
             <a class="tar_download_link" href="https://github.com/beschulz/asio_service_discovery/tarball/master">Download this project as a tar.gz file</a>
@@ -84,7 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -103,6 +103,94 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><span class="comment">// Created by Benjamin Schulz on 15/03/15.</span></div>
 <div class="line"><span class="comment">//</span></div>
 <div class="line"></div>
+<div class="line"><span class="preprocessor">#include &lt;betabugs/networking/thrift_asio_server.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;chat_server.h&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;chat_client.h&gt;</span></div>
+<div class="line"></div>
+<div class="line"><span class="keyword">class </span>chat_server_handler</div>
+<div class="line">    : <span class="keyword">public</span> example::chat::chat_serverIf</div>
+<div class="line">    , <span class="keyword">public</span> <a name="_a0"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html">betabugs::networking::thrift_asio_transport::event_handlers</a></div>
+<div class="line">{</div>
+<div class="line"></div>
+<div class="line">  <span class="keyword">public</span>:</div>
+<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> set_user_name(<span class="keyword">const</span> std::string&amp; name)<span class="keyword"> override</span></div>
+<div class="line"><span class="keyword">    </span>{</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> send_message(<span class="keyword">const</span> std::string&amp; to_user, <span class="keyword">const</span> std::string&amp; message)<span class="keyword"> override</span></div>
+<div class="line"><span class="keyword">    </span>{</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> broadcast_message(<span class="keyword">const</span> std::string&amp; message)<span class="keyword"> override</span></div>
+<div class="line"><span class="keyword">    </span>{</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">// functions called by thrift_asio_transport</span></div>
+<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a name="a1"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html#a45ec583c2489dc7a2a0927810f669bd1">on_error</a>(<span class="keyword">const</span> boost::system::error_code&amp; ec)</div>
+<div class="line">    {</div>
+<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;thrift_asio_transport::on_error&quot;</span> &lt;&lt; ec.message() &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a name="a2"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html#a1b61f0e1cacde8fbe03c096e0cc4230c">on_connected</a>()</div>
+<div class="line">    {</div>
+<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;thrift_asio_transport::on_connected&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a name="a3"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html#a53a9f493469a69dbda0dacdb6b38edfc">on_disconnected</a>()</div>
+<div class="line">    {</div>
+<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;thrift_asio_transport::on_disconnected&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">// functions called by thrift_asio_server</span></div>
+<div class="line">    <span class="keywordtype">void</span> on_client_connected(std::shared_ptr&lt;betabugs::networking::thrift_asio_transport&gt; transport)</div>
+<div class="line">    {</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordtype">void</span> before_process(boost::shared_ptr&lt;apache::thrift::protocol::TBinaryProtocol&gt;)</div>
+<div class="line">    {</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordtype">void</span> after_process()</div>
+<div class="line">    {</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">  <span class="keyword">private</span>:</div>
+<div class="line">    <span class="comment">//example::chat::chat_clientClient</span></div>
+<div class="line">};</div>
+<div class="line"></div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>* argv[])</div>
+<div class="line">{</div>
+<div class="line">    (void) argc;</div>
+<div class="line">    (void) argv;</div>
+<div class="line"></div>
+<div class="line">    <span class="keyword">auto</span> handler = boost::make_shared&lt;chat_server_handler&gt;();</div>
+<div class="line">    <span class="keyword">auto</span> processor = example::chat::chat_serverProcessor</div>
+<div class="line">        (</div>
+<div class="line">            handler</div>
+<div class="line">        );</div>
+<div class="line"></div>
+<div class="line">    <a name="_a4"></a><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__server.html">betabugs::networking::thrift_asio_server&lt;chat_server_handler&gt;</a> server;</div>
+<div class="line"></div>
+<div class="line">    boost::asio::io_service io_service;</div>
+<div class="line">    boost::asio::io_service::work work(io_service);</div>
+<div class="line"></div>
+<div class="line">    server.<a name="a5"></a><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__server.html#ad3ff92b11c76beeb66a7e1f5d7695169">serve</a>(io_service, processor, handler, 1528);</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordflow">while</span> (io_service.poll_one());</div>
+<div class="line">        sleep(1);</div>
+<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;loop&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
 <!-- start footer part -->
@@ -119,7 +207,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </footer>
 </div>
 <!--hr class="footer"/><address class="footer"><small>
-Generated on Sun Mar 15 2015 19:11:49 for Asio Service Discovery by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Mar 15 2015 22:23:14 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address-->
