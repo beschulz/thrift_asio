@@ -111,16 +111,20 @@ class thrift_asio_server
 	{
 		using boost::make_shared;
 
-		auto transport = std::make_shared<thrift_asio_transport>(socket, handler.get());
-		handler->on_client_connected(transport);
+		// construct the output_protocol and call the handler
+		auto t1 = boost::make_shared<thrift_asio_transport>(socket, handler.get());
+		auto t2 = boost::make_shared<apache::thrift::transport::TFramedTransport>(t1);
+		auto output_protocol = boost::make_shared<TBinaryProtocol>(t2);
+		handler->on_client_connected(output_protocol);
 
-		read_frame_size(io_service, socket, processor, handler);
+		read_frame_size(io_service, socket, output_protocol, processor, handler);
 	}
 
 	// read the size of a frame. Clients are expected to use the framed protocol
 	static void read_frame_size(
 		boost::asio::io_service& io_service,
 		std::shared_ptr<boost::asio::ip::tcp::socket> socket,
+		boost::shared_ptr<TBinaryProtocol> output_protocol,
 		TProcessor& processor,
 		Handler_ptr handler
 	)
@@ -128,7 +132,7 @@ class thrift_asio_server
 		auto frame_size = std::make_shared<uint32_t>(0);
 		boost::asio::async_read(
 			*socket, boost::asio::buffer(frame_size.get(), sizeof(uint32_t)),
-			[&io_service, socket, &processor, handler, frame_size]
+			[&io_service, socket, output_protocol, &processor, handler, frame_size]
 				(const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
 			{
 				if(ec)
@@ -140,7 +144,7 @@ class thrift_asio_server
 					*frame_size = ntohl(*frame_size);
 					std::clog << "frame_size=" << *frame_size << std::endl;
 
-					read_frame_data(io_service, socket, processor, handler, *frame_size);
+					read_frame_data(io_service, socket, output_protocol, processor, handler, *frame_size);
 				}
 			}
 		);
@@ -150,6 +154,7 @@ class thrift_asio_server
 	static void read_frame_data(
 		boost::asio::io_service& io_service,
 		std::shared_ptr<boost::asio::ip::tcp::socket> socket,
+		boost::shared_ptr<TBinaryProtocol> output_protocol,
 		TProcessor& processor,
 		Handler_ptr handler,
 		uint32_t frame_size
@@ -158,7 +163,7 @@ class thrift_asio_server
 		auto frame_bytes = std::make_shared<std::vector<uint8_t>>(frame_size);
 		boost::asio::async_read(
 			*socket, boost::asio::buffer(frame_bytes->data(), frame_size),
-			[&io_service, socket, &processor, handler, frame_bytes]
+			[&io_service, socket, output_protocol, &processor, handler, frame_bytes]
 				(const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
 			{
 				if(ec)
@@ -172,8 +177,8 @@ class thrift_asio_server
 					auto input_transport = boost::make_shared<TMemoryBuffer>(frame_bytes->data(), frame_bytes->size());
 					auto input_protocol = boost::make_shared<TBinaryProtocol>(input_transport);
 
-					auto output_transport = boost::make_shared<TMemoryBuffer>();
-					auto output_protocol = boost::make_shared<TBinaryProtocol>(output_transport);
+					//auto output_transport = boost::make_shared<TMemoryBuffer>();
+					//auto output_protocol = boost::make_shared<TBinaryProtocol>(output_transport);
 
 					void* connection_context = nullptr;
 
@@ -181,9 +186,12 @@ class thrift_asio_server
 					processor.process(input_protocol, output_protocol, connection_context);
 					handler->after_process();
 
-					std::clog << "response bytes: " << output_transport->available_read() << std::endl;
+					//std::clog << "response bytes: " << output_transport->available_read() << std::endl;
 
-					// is there a response to write back to the client?
+					// read the next frame
+					read_frame_size(io_service, socket, output_protocol, processor, handler);
+
+					/*// is there a response to write back to the client?
 					if( output_transport->available_read() )
 					{
 						write_frame_size(
@@ -197,7 +205,7 @@ class thrift_asio_server
 					else // nope, start reading the next frame
 					{
 						read_frame_size(io_service, socket, processor, handler);
-					}
+					}*/
 				}
 			}
 		);
