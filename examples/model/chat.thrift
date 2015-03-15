@@ -1,3 +1,4 @@
+namespace cpp example.chat
 
 /*!
  *  The chat server
