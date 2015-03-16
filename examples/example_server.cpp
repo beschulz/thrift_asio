@@ -29,20 +29,6 @@ class chat_server_handler
 		current_session_->client.on_set_user_name_succeeded();
 	}
 
-	virtual void send_message(const std::string& to_user, const std::string& message) override
-	{
-		assert(current_session_);
-		for (auto& s : sessions_)
-		{
-			if( s.second->user_name == to_user )
-			{
-				s.second->client.on_message(current_session_->user_name, message);
-				return;
-			}
-		}
-		current_session_->client.on_send_message_failed("no such user " + to_user);
-	}
-
 	virtual void broadcast_message(const std::string& message) override
 	{
 		assert(current_session_);

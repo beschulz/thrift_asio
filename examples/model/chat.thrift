@@ -2,14 +2,13 @@ namespace cpp example.chat
 
 /*!
  *  The chat server
+ *  ===============
+ *  We call it yell-chat, because it's only possible to broadcast messages
  */
 service chat_server
 {
     /// The client is expected to call this on connect
     oneway void set_user_name(1:string name);
-
-    /// send message to to_user
-    oneway void send_message(1:string to_user, 2:string message);
 
     /// broadcast message to all connected clients.
     oneway void broadcast_message(1:string message);
