@@ -91,8 +91,8 @@ class thrift_asio_client
 	boost::asio::io_service& io_service_;
 	ProcessorType processor_;
 
-	boost::shared_ptr <thrift_asio_client_transport> transport_;
-	boost::shared_ptr <apache::thrift::protocol::TProtocol> protocol_;
+	boost::shared_ptr<thrift_asio_client_transport> transport_;
+	boost::shared_ptr<apache::thrift::protocol::TProtocol> protocol_;
   protected:
 	ClientType client_; ///< the client used to communicate with the server
 };

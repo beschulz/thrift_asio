@@ -30,14 +30,18 @@ endif(DOXYGEN_FOUND)
 
 set(
     test_thrift_sources
-    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/returning_service.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/synchronous_service.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/asynchronous_server.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/asynchronous_client.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/test_constants.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/test_types.cpp"
 )
 
 set(
     test_skeleton_sources
-    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/returning_service_server.skeleton.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/synchronous_service_server.skeleton.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/asynchronous_server_server.skeleton.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/asynchronous_client_server.skeleton.cpp"
 )
 
 # compile thrift file
@@ -47,7 +51,7 @@ add_custom_command(
     COMMAND rm -f ${test_skeleton_sources}
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/test.thrift"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests/model"
-    COMMENT "compiling thrift file" VERBATIM
+    COMMENT "compiling test.thrift" VERBATIM
 )
 
 # create one target for each test
