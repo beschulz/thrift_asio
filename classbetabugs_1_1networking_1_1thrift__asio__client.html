@@ -115,6 +115,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>An asynchronous bidirectional thrift client.  
+ <a href="classbetabugs_1_1networking_1_1thrift__asio__client.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="thrift__asio__client_8hpp_source.html">thrift_asio_client.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for betabugs::networking::thrift_asio_client&lt; ClientType, ProcessorType, HandlerInterfaceType &gt;:</div>
@@ -129,7 +132,7 @@ Inheritance diagram for betabugs::networking::thrift_asio_client&lt; ClientType,
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab4d3f25d613c869672d7cb0bcdd27564"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4d3f25d613c869672d7cb0bcdd27564"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__client.html#ab4d3f25d613c869672d7cb0bcdd27564">thrift_asio_client</a> (boost::asio::io_service &amp;io_service, const std::string &amp;host_name, const std::string &amp;service_name)</td></tr>
-<tr class="memdesc:ab4d3f25d613c869672d7cb0bcdd27564"><td class="mdescLeft">&#160;</td><td class="mdescRight">creates a <a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__client.html">thrift_asio_client</a> and tries to connect to host_name:service_name <br/></td></tr>
+<tr class="memdesc:ab4d3f25d613c869672d7cb0bcdd27564"><td class="mdescLeft">&#160;</td><td class="mdescRight">creates a <a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__client.html" title="An asynchronous bidirectional thrift client. ">thrift_asio_client</a> and tries to connect to host_name:service_name <br/></td></tr>
 <tr class="separator:ab4d3f25d613c869672d7cb0bcdd27564"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0de14c7174164f5cd5f499f01e206c0f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0de14c7174164f5cd5f499f01e206c0f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__client.html#a0de14c7174164f5cd5f499f01e206c0f">update</a> ()</td></tr>
@@ -155,7 +158,16 @@ ClientType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 <div class="textblock"><h3>template&lt;typename ClientType, typename ProcessorType, typename HandlerInterfaceType&gt;<br/>
 class betabugs::networking::thrift_asio_client&lt; ClientType, ProcessorType, HandlerInterfaceType &gt;</h3>
 
-<p>Use this class on the client </p>
+<p>An asynchronous bidirectional thrift client. </p>
+<p>Use this class as the base class for the implementation of your client side handler.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ClientType</td><td>type of the auto-generated client. i.e. MyAwesomeServerClient </td></tr>
+    <tr><td class="paramname">ProcessorType</td><td>an auto-generated TProcessor, that works with HandlerInterfaceType. i.e. MyAwesomeClientProcessor </td></tr>
+    <tr><td class="paramname">HandlerInterfaceType</td><td>auto-generated interface of the handler you're implementing. i.e. MyAwesomeClientIf </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl><dt><b>Examples: </b></dt><dd><a class="el" href="example_client_8cpp-example.html#_a0">example_client.cpp</a>.</dd>
 </dl></div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="thrift__asio__client_8hpp_source.html">thrift_asio_client.hpp</a></li>
@@ -176,7 +188,7 @@ class betabugs::networking::thrift_asio_client&lt; ClientType, ProcessorType, Ha
   </footer>
 </div>
 <!--hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 16 2015 06:03:40 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 16 2015 21:40:59 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address-->
