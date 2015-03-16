@@ -78,7 +78,7 @@ class thrift_asio_connection_management_mixin
 	typedef boost::shared_ptr<apache::thrift::protocol::TProtocol> protocol_ptr;
 
 	/// used as mapped_type in the client_map
-	typedef std::shared_ptr<test::asynchronous_clientClient> client_ptr;
+	typedef std::shared_ptr<ClientType> client_ptr;
 
 	/// maps protocol instances to clients
 	typedef std::map<protocol_ptr, client_ptr> client_map;
