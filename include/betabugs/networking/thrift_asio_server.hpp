@@ -32,7 +32,7 @@ namespace networking{
 *   @code
 *   void on_client_connected(boost::shared_ptr<apache::thrift::protocol::TProtocol> output_protocol);
 *   void on_client_disconnected(const boost::shared_ptr<apache::thrift::protocol::TProtocol>& output_protocol, const boost::system::error_code& ec);
-*   void before_process(boost::shared_ptr<apache::thrift::protocol::TBinaryProtocol> output_protocol);
+*   void before_process(boost::shared_ptr<apache::thrift::protocol::TProtocol> output_protocol);
 *   void after_process();
 *   @endcode
 * */
