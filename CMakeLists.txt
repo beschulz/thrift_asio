@@ -32,31 +32,12 @@ foreach(test_file ${tests})
     target_link_libraries(${test_name} "boost_system" "boost_unit_test_framework")
 endforeach(test_file)
 
-# create one target for each example
-add_custom_target(
-    thrift-compile
-    COMMAND thrift -gen cpp ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples/model
-    COMMENT "Compiling thrift model" VERBATIM
-    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
-)
 
 set(
     skeleton_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_client_server.skeleton.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_server_server.skeleton.cpp
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_client_server.skeleton.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_server_server.skeleton.cpp"
 )
-
-add_custom_target(
-    thrift-compile-and-cleanup
-    COMMAND rm ${skeleton_sources}
-    DEPENDS thrift-compile ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/
-    COMMENT "removing unneeded thrift output files" VERBATIM
-)
-
-file(GLOB examples RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/examples" "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp")
 
 set(
     thrift_sources
@@ -66,11 +47,23 @@ set(
     "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_types.cpp"
 )
 
+# compile thrift file
+add_custom_command(
+    OUTPUT ${thrift_sources}
+    COMMAND thrift -gen cpp ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
+    COMMAND rm -f ${skeleton_sources}
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/examples/model"
+    COMMENT "compiling thrift file" VERBATIM
+)
+
+file(GLOB examples RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/examples" "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp")
+
+# create one target for each example
 foreach(example_file ${examples})
     get_filename_component(example_name ${example_file} NAME_WE)
 
     add_executable(${example_name} "${CMAKE_CURRENT_SOURCE_DIR}/examples/${example_name}" ${thrift_sources})
     target_include_directories(${example_name} PUBLIC "./include" "./examples/model/gen-cpp")
     target_link_libraries(${example_name} "boost_system" "thrift")
-    add_dependencies(${example_name} thrift-compile-and-cleanup)
 endforeach(example_file)
