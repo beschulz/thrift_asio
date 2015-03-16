@@ -62,7 +62,9 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	/// Attempt to read up to the specified number of bytes into the string.
 	/*!
 	*
-	* This does not block.
+	* This does not block if data is available. But it does block,
+	* if there is not enough data. If you don't want to block, use
+	* available_bytes() to check if there's enough data.
 	*
 	* @param buf  Reference to the location to write the data
 	* @param len  How many bytes to read
@@ -70,6 +72,11 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	*/
 	uint32_t read(uint8_t* buf, uint32_t len)
 	{
+		while (available_bytes() < len)
+		{
+			socket_->get_io_service().run_one();
+		}
+
 		auto bytes_to_copy = std::min<size_t>(len, incomming_bytes_.size());
 
 		std::copy(
