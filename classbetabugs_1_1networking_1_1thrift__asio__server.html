@@ -139,7 +139,8 @@ HandlerType</h1>
 <div class="line"><span class="keywordtype">void</span> on_client_disconnected(<span class="keyword">const</span> boost::shared_ptr&lt;apache::thrift::protocol::TProtocol&gt;&amp; output_protocol, <span class="keyword">const</span> boost::system::error_code&amp; ec);</div>
 <div class="line"><span class="keywordtype">void</span> before_process(boost::shared_ptr&lt;apache::thrift::protocol::TProtocol&gt; output_protocol);</div>
 <div class="line"><span class="keywordtype">void</span> after_process();</div>
-</div><!-- fragment --> <dl><dt><b>Examples: </b></dt><dd><a class="el" href="example_server_8cpp-example.html#_a4">example_server.cpp</a>.</dd>
+</div><!-- fragment --><p>or you can simply inherit your server side handler from <a class="el" href="classbetabugs_1_1networking_1_1thrift__asio__connection__management__mixin.html">thrift_asio_connection_management_mixin</a> </p>
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="example_server_8cpp-example.html#_a4">example_server.cpp</a>.</dd>
 </dl></div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ad3ff92b11c76beeb66a7e1f5d7695169"></a>
 <div class="memitem">
@@ -216,7 +217,7 @@ template&lt;typename HandlerType&gt; </div>
   </footer>
 </div>
 <!--hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 16 2015 21:40:59 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 16 2015 22:03:49 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address-->
