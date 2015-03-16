@@ -26,36 +26,63 @@ add_custom_target(
 )
 endif(DOXYGEN_FOUND)
 
-# create one target for each test
-file(GLOB_RECURSE tests RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp")
-foreach(test_file ${tests})
-    get_filename_component(test_name ${test_file} NAME_WE)
-
-    add_executable(${test_name} "${CMAKE_CURRENT_SOURCE_DIR}/tests/${test_file}")
-    target_include_directories(${test_name} PUBLIC "./include")
-    target_link_libraries(${test_name} "boost_system" "boost_unit_test_framework")
-endforeach(test_file)
 
 
 set(
-    skeleton_sources
-    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_client_server.skeleton.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_server_server.skeleton.cpp"
+    test_thrift_sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/returning_service.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/test_constants.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/test_types.cpp"
 )
 
 set(
-    thrift_sources
+    test_skeleton_sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/gen-cpp/returning_service_server.skeleton.cpp"
+)
+
+# compile thrift file
+add_custom_command(
+    OUTPUT ${test_thrift_sources}
+    COMMAND thrift -gen cpp ${CMAKE_CURRENT_SOURCE_DIR}/tests/model/test.thrift
+    COMMAND rm -f ${test_skeleton_sources}
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tests/model/test.thrift"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests/model"
+    COMMENT "compiling thrift file" VERBATIM
+)
+
+# create one target for each test
+file(GLOB tests RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp")
+foreach(test_file ${tests})
+    get_filename_component(test_name ${test_file} NAME_WE)
+
+    add_executable(${test_name} "${CMAKE_CURRENT_SOURCE_DIR}/tests/${test_file}" ${test_thrift_sources})
+    target_include_directories(${test_name} PUBLIC "./include" "./tests/model/gen-cpp")
+    target_link_libraries(${test_name} "boost_system" "boost_unit_test_framework" "thrift")
+endforeach(test_file)
+
+
+
+
+
+set(
+    example_thrift_sources
     "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_client.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_server.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_constants.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_types.cpp"
 )
 
+set(
+    example_skeleton_sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_client_server.skeleton.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/gen-cpp/chat_server_server.skeleton.cpp"
+)
+
 # compile thrift file
 add_custom_command(
-    OUTPUT ${thrift_sources}
+    OUTPUT ${example_thrift_sources}
     COMMAND thrift -gen cpp ${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift
-    COMMAND rm -f ${skeleton_sources}
+    COMMAND rm -f ${example_skeleton_sources}
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/examples/model/chat.thrift"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/examples/model"
     COMMENT "compiling thrift file" VERBATIM
@@ -67,7 +94,7 @@ file(GLOB examples RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/examples" "${CMAKE_CURR
 foreach(example_file ${examples})
     get_filename_component(example_name ${example_file} NAME_WE)
 
-    add_executable(${example_name} "${CMAKE_CURRENT_SOURCE_DIR}/examples/${example_name}" ${thrift_sources})
+    add_executable(${example_name} "${CMAKE_CURRENT_SOURCE_DIR}/examples/${example_name}" ${example_thrift_sources})
     target_include_directories(${example_name} PUBLIC "./include" "./examples/model/gen-cpp")
     target_link_libraries(${example_name} "boost_system" "thrift")
 endforeach(example_file)
