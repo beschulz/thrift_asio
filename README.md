@@ -1,5 +1,7 @@
 # Thrift via boost::asio
 
+[![Build Status](https://travis-ci.org/beschulz/thrift_asio.svg?branch=master)](https://travis-ci.org/beschulz/thrift_asio)
+
 ## motivation
 
 ### non-blocking
