@@ -138,12 +138,11 @@ class thrift_asio_server
 				if(ec)
 				{
 					std::clog << ec.message() << std::endl;
+					handler->on_client_disconnected(output_protocol, ec);
 				}
 				else
 				{
 					*frame_size = ntohl(*frame_size);
-					std::clog << "frame_size=" << *frame_size << std::endl;
-
 					read_frame_data(io_service, socket, output_protocol, processor, handler, *frame_size);
 				}
 			}
@@ -169,6 +168,7 @@ class thrift_asio_server
 				if(ec)
 				{
 					std::clog << ec.message() << std::endl;
+					handler->on_client_disconnected(output_protocol, ec);
 				}
 				else
 				{
@@ -177,96 +177,18 @@ class thrift_asio_server
 					auto input_transport = boost::make_shared<TMemoryBuffer>(frame_bytes->data(), frame_bytes->size());
 					auto input_protocol = boost::make_shared<TBinaryProtocol>(input_transport);
 
-					//auto output_transport = boost::make_shared<TMemoryBuffer>();
-					//auto output_protocol = boost::make_shared<TBinaryProtocol>(output_transport);
-
 					void* connection_context = nullptr;
 
 					handler->before_process(output_protocol);
 					processor.process(input_protocol, output_protocol, connection_context);
 					handler->after_process();
 
-					//std::clog << "response bytes: " << output_transport->available_read() << std::endl;
-
 					// read the next frame
 					read_frame_size(io_service, socket, output_protocol, processor, handler);
-
-					/*// is there a response to write back to the client?
-					if( output_transport->available_read() )
-					{
-						write_frame_size(
-							io_service,
-							socket,
-							processor,
-							handler,
-							std::make_shared<std::string>(output_transport->getBufferAsString())
-						);
-					}
-					else // nope, start reading the next frame
-					{
-						read_frame_size(io_service, socket, processor, handler);
-					}*/
 				}
 			}
 		);
 	}
-
-	// write the number of bytes in the response frame to follow
-	static void write_frame_size(
-		boost::asio::io_service& io_service,
-		std::shared_ptr<boost::asio::ip::tcp::socket> socket,
-		TProcessor& processor,
-		Handler_ptr handler,
-		std::shared_ptr<std::string> response
-	)
-	{
-		auto frame_size = std::make_shared<uint32_t>(htonl(response->size()));
-
-		boost::asio::async_write(
-			*socket,
-			boost::asio::buffer( frame_size.get(), sizeof(uint32_t) ),
-			[&io_service, socket, &processor, handler, response, frame_size]
-				(const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
-			{
-				if(ec)
-				{
-					std::clog << "write_frame_size: " << ec.message() << std::endl;
-				}
-				else
-				{
-					write_frame_data(io_service, socket, processor, handler, response);
-				}
-			}
-		);
-	}
-
-	// write the gist of the frame
-	static void write_frame_data(
-		boost::asio::io_service& io_service,
-		std::shared_ptr<boost::asio::ip::tcp::socket> socket,
-		TProcessor& processor,
-		Handler_ptr handler,
-		std::shared_ptr<std::string> response
-	)
-	{
-		boost::asio::async_write(
-			*socket,
-			boost::asio::buffer( response->data(), response->size() ),
-			[&io_service, socket, &processor, handler, response]
-				(const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
-			{
-				if(ec)
-				{
-					std::clog << "write_frame_data: " << ec.message() << std::endl;
-				}
-				else
-				{
-					read_frame_size(io_service, socket, processor, handler);
-				}
-			}
-		);
-	}
-
 };
 
 /** \example example_server.cpp

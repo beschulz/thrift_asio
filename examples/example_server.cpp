@@ -79,6 +79,15 @@ class chat_server_handler
 		);
 	}
 
+	void on_client_disconnected(const boost::shared_ptr<apache::thrift::protocol::TProtocol>& output_protocol, const boost::system::error_code& ec)
+	{
+		assert( sessions_.find(output_protocol) != sessions_.end() );
+
+		std::clog << "client disconnected. reason: " << ec.message() << std::endl;
+
+		sessions_.erase(output_protocol);
+	}
+
 	void before_process(boost::shared_ptr<apache::thrift::protocol::TBinaryProtocol> output_protocol)
 	{
 		Sessions::iterator pos = sessions_.find(output_protocol);
