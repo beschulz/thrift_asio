@@ -98,7 +98,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Thrift Asio Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h2>motivation</h2>
+<div class="textblock"><p><a href="https://travis-ci.org/beschulz/thrift_asio">![Build Status](https://travis-ci.org/beschulz/thrift_asio.svg?branch=master)</a></p>
+<h2>motivation</h2>
 <h3>non-blocking</h3>
 <p>in time sensitive or "real time" applications, it might be desirable to use the RPC mechanisms of <a href="https://thrift.apache.org/">apache thrift</a> in a non-blocking, asynchronous manner.</p>
 <p>By using <a href="http://www.boost.org/doc/libs/release/libs/asio/">boost::asio</a> for the implementation for the client transport and server no extra threads have to be created. The non-blocking server can serve multiple clients and can be polled/updated from the main thread (or any other thread that is convenient).</p>
@@ -109,6 +110,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>This implementation enables bidirectional communication without creating another network connection from the server to the client. For this to work, all rpc functions have to be marked as 'oneway' to keep the beck-channel free of packets.</p>
 <h2>design</h2>
 <p>This library is header-only. Also C++11 stl data-types are used in precedence over boosts wherever possible.</p>
+<h2>documentation</h2>
+<p>Read the <a href="http://beschulz.github.io/thrift_asio/">API Docs</a></p>
 <h2>License</h2>
 <p>This library is Distributed under the <a href="http://www.boost.org/LICENSE_1_0.txt">Boost Software License, Version 1.0</a> .</p>
 <h2>Bugs</h2>
@@ -129,7 +132,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </footer>
 </div>
 <!--hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 16 2015 04:31:31 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 16 2015 06:03:40 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address-->
