@@ -85,11 +85,16 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 		boost::asio::async_read_until(stdin_, input_buffer_, '\n',
 			[this](const boost::system::error_code& ec, std::size_t length)
 			{
-				std::istream is(&input_buffer_);
-				std::string line;
-				is >> line;
-				std::cout << line << std::endl;
-				client_.set_user_name(line);
+				if(!ec && length>1)
+				{
+					std::string line;
+					std::getline(std::istream(&input_buffer_), line);
+
+					if(!line.empty())
+						client_.set_user_name(line);
+					else
+						read_username();
+				}
 			}
 		);
 	}
@@ -101,11 +106,17 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 		boost::asio::async_read_until(stdin_, input_buffer_, '\n',
 			[this](const boost::system::error_code& ec, std::size_t length)
 			{
-				std::istream is(&input_buffer_);
-				std::string line;
-				is >> line;
-				std::cout << line << std::endl;
-				client_.broadcast_message(line);
+				if(!ec)
+				{
+					std::string line;
+					std::getline(std::istream(&input_buffer_), line);
+
+					if(!line.empty())
+						client_.broadcast_message(line);
+
+					// start over
+					read_message();
+				}
 			}
 		);
 	}
