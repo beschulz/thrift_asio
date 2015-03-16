@@ -104,19 +104,34 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><span class="comment">//</span></div>
 <div class="line"></div>
 <div class="line"><span class="preprocessor">#include &lt;betabugs/networking/thrift_asio_server.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;betabugs/networking/thrift_asio_connection_management_mixin.hpp&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;chat_server.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;chat_client.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;thread&gt;</span> <span class="comment">// for sleep</span></div>
 <div class="line"></div>
+<div class="line"><span class="keyword">struct </span>session</div>
+<div class="line">{</div>
+<div class="line">    session(<span class="keyword">const</span> boost::shared_ptr&lt;apache::thrift::protocol::TProtocol&gt;&amp; output_protocol)</div>
+<div class="line">        : client(output_protocol)</div>
+<div class="line">    {</div>
+<div class="line"></div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    std::string user_name;</div>
+<div class="line">    example::chat::chat_clientClient client;</div>
+<div class="line">};</div>
+<div class="line"></div>
+<div class="line"></div>
 <div class="line"><span class="keyword">class </span>chat_server_handler</div>
 <div class="line">    : <span class="keyword">public</span> example::chat::chat_serverIf</div>
 <div class="line">      , <span class="keyword">public</span> <a name="_a0"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html">betabugs::networking::thrift_asio_transport::event_handlers</a></div>
+<div class="line">      , <span class="keyword">public</span> <a name="_a1"></a><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__connection__management__mixin.html">betabugs::networking::thrift_asio_connection_management_mixin</a>&lt;session&gt;</div>
 <div class="line">{</div>
 <div class="line"></div>
 <div class="line">  <span class="keyword">public</span>:</div>
 <div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> set_user_name(<span class="keyword">const</span> std::string&amp; name)<span class="keyword"> override</span></div>
 <div class="line"><span class="keyword">    </span>{</div>
-<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; p : sessions_)</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; p : clients_)</div>
 <div class="line">        {</div>
 <div class="line">            <span class="keywordflow">if</span> (p.second-&gt;user_name == name)</div>
 <div class="line">            {</div>
@@ -125,89 +140,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            }</div>
 <div class="line">        }</div>
 <div class="line"></div>
-<div class="line">        assert(current_session_);</div>
-<div class="line">        current_session_-&gt;user_name = name;</div>
-<div class="line">        current_session_-&gt;client.on_set_user_name_succeeded();</div>
+<div class="line">        assert(current_client_);</div>
+<div class="line">        current_client_-&gt;user_name = name;</div>
+<div class="line">        current_client_-&gt;client.on_set_user_name_succeeded();</div>
 <div class="line">    }</div>
 <div class="line"></div>
 <div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> broadcast_message(<span class="keyword">const</span> std::string&amp; message)<span class="keyword"> override</span></div>
 <div class="line"><span class="keyword">    </span>{</div>
-<div class="line">        assert(current_session_);</div>
-<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; s : sessions_)</div>
+<div class="line">        assert(current_client_);</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; s : clients_)</div>
 <div class="line">        {</div>
-<div class="line">            <span class="keywordflow">if</span> (s.second != current_session_)</div>
-<div class="line">                s.second-&gt;client.on_message(current_session_-&gt;user_name, message);</div>
+<div class="line">            <span class="keywordflow">if</span> (s.second != current_client_)</div>
+<div class="line">                s.second-&gt;client.on_message(current_client_-&gt;user_name, message);</div>
 <div class="line">        }</div>
 <div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="comment">// functions called by thrift_asio_transport</span></div>
-<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a name="a1"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html#ad0f8b0e0df90d0be0ffd70448d6bded1">on_error</a>(<span class="keyword">const</span> boost::system::error_code&amp; ec)</div>
-<div class="line">    {</div>
-<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;thrift_asio_transport::on_error&quot;</span> &lt;&lt; ec.message() &lt;&lt; std::endl;</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a name="a2"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html#a1b61f0e1cacde8fbe03c096e0cc4230c">on_connected</a>()</div>
-<div class="line">    {</div>
-<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;thrift_asio_transport::on_connected&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a name="a3"></a><a class="code" href="structbetabugs_1_1networking_1_1thrift__asio__transport_1_1event__handlers.html#a53a9f493469a69dbda0dacdb6b38edfc">on_disconnected</a>()</div>
-<div class="line">    {</div>
-<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;thrift_asio_transport::on_disconnected&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="comment">// functions called by thrift_asio_server</span></div>
-<div class="line">    <span class="keywordtype">void</span> on_client_connected(boost::shared_ptr&lt;apache::thrift::protocol::TProtocol&gt; output_protocol)</div>
-<div class="line">    {</div>
-<div class="line">        sessions_.insert(</div>
-<div class="line">            std::make_pair(</div>
-<div class="line">                output_protocol,</div>
-<div class="line">                std::make_shared&lt;Session&gt;(output_protocol, <span class="stringliteral">&quot;no-name&quot;</span>)</div>
-<div class="line">            )</div>
-<div class="line">        );</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="keywordtype">void</span> on_client_disconnected(<span class="keyword">const</span> boost::shared_ptr&lt;apache::thrift::protocol::TProtocol&gt;&amp; output_protocol, <span class="keyword">const</span> boost::system::error_code&amp; ec)</div>
-<div class="line">    {</div>
-<div class="line">        assert( sessions_.find(output_protocol) != sessions_.end() );</div>
-<div class="line"></div>
-<div class="line">        std::clog &lt;&lt; <span class="stringliteral">&quot;client disconnected. reason: &quot;</span> &lt;&lt; ec.message() &lt;&lt; std::endl;</div>
-<div class="line"></div>
-<div class="line">        sessions_.erase(output_protocol);</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="keywordtype">void</span> before_process(boost::shared_ptr&lt;apache::thrift::protocol::TBinaryProtocol&gt; output_protocol)</div>
-<div class="line">    {</div>
-<div class="line">        Sessions::iterator pos = sessions_.find(output_protocol);</div>
-<div class="line">        assert(pos != sessions_.end());</div>
-<div class="line">        current_session_ = pos-&gt;second;</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="keywordtype">void</span> after_process()</div>
-<div class="line">    {</div>
-<div class="line">        current_session_.reset();</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">  <span class="keyword">private</span>:</div>
-<div class="line">    <span class="keyword">typedef</span> boost::shared_ptr&lt;apache::thrift::protocol::TProtocol&gt; protocol_ptr;</div>
-<div class="line"></div>
-<div class="line">    <span class="keyword">struct </span>Session</div>
-<div class="line">    {</div>
-<div class="line">        Session(<span class="keyword">const</span> example::chat::chat_clientClient&amp; client, <span class="keyword">const</span> std::string&amp; user_name)</div>
-<div class="line">            : client(client), user_name(user_name)</div>
-<div class="line">        {</div>
-<div class="line">        }</div>
-<div class="line"></div>
-<div class="line">        example::chat::chat_clientClient client;</div>
-<div class="line">        std::string user_name;</div>
-<div class="line">    };</div>
-<div class="line"></div>
-<div class="line">    <span class="keyword">typedef</span> std::shared_ptr&lt;Session&gt; session_ptr;</div>
-<div class="line"></div>
-<div class="line">    <span class="keyword">typedef</span> std::map&lt;protocol_ptr, session_ptr&gt; Sessions;</div>
-<div class="line">    Sessions sessions_;</div>
-<div class="line"></div>
-<div class="line">    session_ptr current_session_;</div>
 <div class="line">};</div>
 <div class="line"></div>
 <div class="line"></div>
@@ -219,7 +165,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line"><span class="keywordtype">void</span> the_non_blocking_loop(boost::asio::io_service&amp; io_service)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordflow">while</span>(<span class="keyword">true</span>)</div>
+<div class="line">    <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
 <div class="line">    {</div>
 <div class="line">        <span class="keywordflow">while</span> (io_service.poll_one());</div>
 <div class="line"></div>
@@ -240,12 +186,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            handler</div>
 <div class="line">        );</div>
 <div class="line"></div>
-<div class="line">    <a name="_a4"></a><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__server.html">betabugs::networking::thrift_asio_server&lt;chat_server_handler&gt;</a> server;</div>
+<div class="line">    <a name="_a2"></a><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__server.html">betabugs::networking::thrift_asio_server&lt;chat_server_handler&gt;</a> server;</div>
 <div class="line"></div>
 <div class="line">    boost::asio::io_service io_service;</div>
 <div class="line">    boost::asio::io_service::work work(io_service);</div>
 <div class="line"></div>
-<div class="line">    server.<a name="a5"></a><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__server.html#ad3ff92b11c76beeb66a7e1f5d7695169">serve</a>(io_service, processor, handler, 1528);</div>
+<div class="line">    server.<a name="a3"></a><a class="code" href="classbetabugs_1_1networking_1_1thrift__asio__server.html#ad3ff92b11c76beeb66a7e1f5d7695169">serve</a>(io_service, processor, handler, 1528);</div>
 <div class="line"></div>
 <div class="line">    the_blocking_version(io_service);</div>
 <div class="line"></div>
@@ -264,12 +210,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <!-- FOOTER  -->
 <div id="footer_wrap" class="outer">
   <footer class="inner">
-    <p class="copyright">Asio service discovery maintained by <a href="https://github.com/beschulz">beschulz</a></p>
+    <p class="copyright">Thrift Asio maintained by <a href="https://github.com/beschulz">beschulz</a></p>
     <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
   </footer>
 </div>
 <!--hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 16 2015 22:09:02 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Mar 17 2015 00:27:06 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address-->
