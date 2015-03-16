@@ -3,7 +3,7 @@
 //
 
 #ifndef BOOST_TEST_MODULE
-#	define BOOST_TEST_MODULE test_transport
+#	define BOOST_TEST_MODULE test_synchrounous
 #	define BOOST_TEST_DYN_LINK
 
 #	include <boost/test/unit_test.hpp>
@@ -13,7 +13,7 @@
 #include <iostream>
 #include <thrift/protocol/TBinaryProtocol.h>
 
-#include <returning_service.h>
+#include <synchronous_service.h>
 #include <betabugs/networking/thrift_asio_transport.hpp>
 #include <betabugs/networking/thrift_asio_server.hpp>
 #include <betabugs/networking/thrift_asio_client_transport.hpp>
@@ -21,7 +21,7 @@
 #include <thread>
 #include <future>
 
-class returning_service_handler : public test::returning_serviceIf
+class synchronous_service_handler : public test::synchronous_serviceIf
 								  , public betabugs::networking::thrift_asio_transport::event_handlers
 {
   public:
@@ -88,17 +88,17 @@ struct test_event_handlers : public betabugs::networking::thrift_asio_transport:
 	}
 };
 
-BOOST_AUTO_TEST_SUITE(test_transport)
+BOOST_AUTO_TEST_SUITE(test_synchrounous)
 
-BOOST_AUTO_TEST_CASE(test_transport)
+BOOST_AUTO_TEST_CASE(test_synchrounous_basic)
 {
-	auto handler = boost::make_shared<returning_service_handler>();
-	auto processor = test::returning_serviceProcessor
+	auto handler = boost::make_shared<synchronous_service_handler>();
+	auto processor = test::synchronous_serviceProcessor
 		(
 			handler
 		);
 
-	betabugs::networking::thrift_asio_server<returning_service_handler> server;
+	betabugs::networking::thrift_asio_server<synchronous_service_handler> server;
 
 	boost::asio::io_service io_service;
 	boost::asio::io_service::work work(io_service);
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_transport)
 		auto t2 = boost::make_shared<apache::thrift::transport::TFramedTransport>(t1);
 		auto client_protocol = boost::make_shared<apache::thrift::protocol::TBinaryProtocol>(t2);
 
-		test::returning_serviceClient client(client_protocol);
+		test::synchronous_serviceClient client(client_protocol);
 
 		t2->open();
 
