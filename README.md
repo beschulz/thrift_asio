@@ -2,7 +2,7 @@
 
 ## motivation
 
-### non-blocking / non-locking
+### non-blocking
 in time sensitive or "real time" applications, it might be desirable to use the RPC mechanisms of
 [apache thrift](https://thrift.apache.org/) in a non-blocking, asynchronous manner.
 
@@ -11,6 +11,8 @@ transport and server no extra threads have to be created. The non-blocking serve
 be polled/updated from the main thread (or any other thread that is convenient).
 
 another advantage is, that the application developer is in control of when exactly the RPC callbacks are called.
+
+An interesting read on the topic is [The C10K problem](http://www.kegel.com/c10k.html).
 
 ### bidirectional
 
