@@ -27,12 +27,12 @@
 <!-- HEADER -->
 <div id="header_wrap" class="outer">
     <header class="inner">
-        <a id="forkme_banner" href="https://github.com/beschulz/asio_service_discovery">View on GitHub</a>
+        <a id="forkme_banner" href="https://github.com/beschulz/thrift_asio">View on GitHub</a>
         <h1 id="project_title">Thrift Asio </h1>
         <h2 id="project_tagline">Asynchronous client and server for apache thrift implemented via boost::asio</h2>
         <section id="downloads">
-            <a class="zip_download_link" href="https://github.com/beschulz/asio_service_discovery/zipball/master">Download this project as a .zip file</a>
-            <a class="tar_download_link" href="https://github.com/beschulz/asio_service_discovery/tarball/master">Download this project as a tar.gz file</a>
+            <a class="zip_download_link" href="https://github.com/beschulz/thrift_asio/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/beschulz/thrift_asio/tarball/master">Download this project as a tar.gz file</a>
         </section>
     </header>
 </div>
@@ -99,10 +99,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h2>motivation</h2>
-<h3>non-blocking / non-locking</h3>
+<h3>non-blocking</h3>
 <p>in time sensitive or "real time" applications, it might be desirable to use the RPC mechanisms of <a href="https://thrift.apache.org/">apache thrift</a> in a non-blocking, asynchronous manner.</p>
 <p>By using <a href="http://www.boost.org/doc/libs/release/libs/asio/">boost::asio</a> for the implementation for the client transport and server no extra threads have to be created. The non-blocking server can serve multiple clients and can be polled/updated from the main thread (or any other thread that is convenient).</p>
 <p>another advantage is, that the application developer is in control of when exactly the RPC callbacks are called.</p>
+<p>An interesting read on the topic is <a href="http://www.kegel.com/c10k.html">The C10K problem</a>.</p>
 <h3>bidirectional</h3>
 <p>Apache thrift by design employs a client server model. That is, a client initiates a request, the server fulfills it. There is no obvious way to perform bidirectional communication other than via the response to a request.</p>
 <p>This implementation enables bidirectional communication without creating another network connection from the server to the client. For this to work, all rpc functions have to be marked as 'oneway' to keep the beck-channel free of packets.</p>
@@ -128,7 +129,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </footer>
 </div>
 <!--hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 16 2015 00:49:46 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 16 2015 04:31:31 for Thrift Asio by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address-->
