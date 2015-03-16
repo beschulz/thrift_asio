@@ -17,7 +17,6 @@
 #include <betabugs/networking/thrift_asio_transport.hpp>
 #include <betabugs/networking/thrift_asio_server.hpp>
 #include <betabugs/networking/thrift_asio_client_transport.hpp>
-#include <faac.h>
 #include <thread>
 #include <future>
 
