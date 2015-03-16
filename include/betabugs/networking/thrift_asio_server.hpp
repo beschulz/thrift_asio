@@ -20,6 +20,21 @@ namespace networking{
 
 /*!
 * Use this class on the server
+*
+* \tparam HandlerType the type of the implementation of a handler.
+*
+* \section HandlerType HandlerType
+*   First of all the HandlerType must work with the auto-generated processor you're using.
+*   it must also be inherited from thrift_asio_transport::event_handlers to be able to receive
+*   transport errors.
+*   lastly it must implement the following member functions:
+*
+*   @code
+*   void on_client_connected(boost::shared_ptr<apache::thrift::protocol::TProtocol> output_protocol);
+*   void on_client_disconnected(const boost::shared_ptr<apache::thrift::protocol::TProtocol>& output_protocol, const boost::system::error_code& ec);
+*   void before_process(boost::shared_ptr<apache::thrift::protocol::TBinaryProtocol> output_protocol);
+*   void after_process();
+*   @endcode
 * */
 template <typename HandlerType>
 class thrift_asio_server

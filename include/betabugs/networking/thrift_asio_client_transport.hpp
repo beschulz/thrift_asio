@@ -23,9 +23,9 @@ class thrift_asio_client_transport : public thrift_asio_transport
 	/// creates a thrift_asio_client_transport and tries to connect to host_name:service_name
 	thrift_asio_client_transport(
 		boost::asio::io_service& io_service, ///< io_service to use
-		const std::string& host_name, ///< name of the host to connect to
-		const std::string& service_name, ///< i.e. port
-		event_handlers* event_handlers
+		const std::string& host_name,        ///< name of the host to connect to
+		const std::string& service_name,     ///< i.e. port
+		event_handlers* event_handlers       ///< the event handlers to use
 	) : thrift_asio_transport(std::make_shared<boost::asio::ip::tcp::socket>(io_service), event_handlers)
 		, host_name_(host_name)
 		, service_name_(service_name)

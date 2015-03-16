@@ -15,8 +15,13 @@
 namespace betabugs {
 namespace networking {
 
+/// An asynchronous bidirectional thrift client
 /*!
-* Use this class on the client
+* Use this class as the base class for the implementation of your client side handler.
+*
+* @tparam ClientType type of the auto-generated client. i.e. MyAwesomeServerClient
+* @tparam ProcessorType an auto-generated TProcessor, that works with HandlerInterfaceType. i.e. MyAwesomeClientProcessor
+* @tparam HandlerInterfaceType auto-generated interface of the handler you're implementing. i.e. MyAwesomeClientIf
 * */
 template<
 	typename ClientType,

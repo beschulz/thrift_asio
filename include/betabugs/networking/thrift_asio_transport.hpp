@@ -30,17 +30,18 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	* */
 	struct event_handlers
 	{
-		/// get invoked when an error occurs
-		virtual void on_error(const boost::system::error_code& /*ec*/)
+		/// Gets invoked when an error occurred while communication over the transport.
+		virtual void on_error(const boost::system::error_code& ec)
 		{
+			(void) ec;
 		}
 
-		/// gets invoked when the transport was successfully connected
+		/// Gets invoked when the transport was successfully connected.
 		virtual void on_connected()
 		{
 		}
 
-		/// gets invoked when the transport is disconnected
+		/// Gets invoked when the transport is disconnected.
 		virtual void on_disconnected()
 		{
 		}
@@ -58,15 +59,15 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	};
 
 
-	/**
-   * Attempt to read up to the specified number of bytes into the string.
-   *
-   * This does not block.
-   *
-   * @param buf  Reference to the location to write the data
-   * @param len  How many bytes to read
-   * @return How many bytes were actually read
-   */
+	/// Attempt to read up to the specified number of bytes into the string.
+	/*!
+	*
+	* This does not block.
+	*
+	* @param buf  Reference to the location to write the data
+	* @param len  How many bytes to read
+	* @return How many bytes were actually read
+	*/
 	uint32_t read(uint8_t* buf, uint32_t len)
 	{
 		auto bytes_to_copy = std::min<size_t>(len, incomming_bytes_.size());
@@ -137,9 +138,10 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 		return state_ == OPEN;
 	}
 
+	/// Checks wether this transport is closed.
 	/*!
-	* return true, if the transport is closed.
-	* It returns false if the connection is open
+	* @returns true, if the transport is closed,
+	* false if the connection is open
 	* or name resolution is in progress.
 	*/
 	bool isClosed()
