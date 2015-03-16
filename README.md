@@ -26,6 +26,10 @@ the client. For this to work, all rpc functions have to be marked as 'oneway' to
 
 This library is header-only. Also C++11 stl data-types are used in precedence over boosts wherever possible.
 
+## documentation
+
+Read the [API Docs](http://beschulz.github.io/thrift_asio/)
+
 ## License
 
 This library is Distributed under the [Boost Software License, Version 1.0](http://www.boost.org/LICENSE_1_0.txt) .
