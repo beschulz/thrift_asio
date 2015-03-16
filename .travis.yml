@@ -44,7 +44,7 @@ install:
   - sudo apt-get install libevent-dev automake libtool flex bison pkg-config g++ libssl-dev
   - wget http://mirror.netcologne.de/apache.org/thrift/0.9.2/thrift-0.9.2.tar.gz
   - tar xfz thrift-0.9.2.tar.gz
-  - cd thrift-0.9.2 && ./configure --with-boost=$BOOST_ROOT --with-boost-libdir=$BOOST_ROOT/lib --with-c_glib=no --with-java=no --with-python=no --with-ruby=no --with-erlang=no --with-go=no --with-nodejs=no --with-cpp=yes && sudo make install
+  - cd thrift-0.9.2 && ./configure --with-boost=$BOOST_ROOT --with-boost-libdir=$BOOST_ROOT/lib --with-c_glib=no --with-java=no --with-python=no --with-ruby=no --with-erlang=no --with-go=no --with-nodejs=no --with-cpp=yes && sudo make install && cd ..
 
 script:
   - mkdir -p build || exit $?
