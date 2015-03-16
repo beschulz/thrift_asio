@@ -90,7 +90,8 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 				if (!ec && length > 1)
 				{
 					std::string line;
-					std::getline(std::istream(&input_buffer_), line);
+					std::istream is(&input_buffer_);
+					std::getline(is, line);
 
 					if (!line.empty())
 						client_.set_user_name(line);
@@ -111,7 +112,8 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 				if (!ec)
 				{
 					std::string line;
-					std::getline(std::istream(&input_buffer_), line);
+					std::istream is(&input_buffer_);
+					std::getline(is, line);
 
 					if (!line.empty())
 						client_.broadcast_message(line);
