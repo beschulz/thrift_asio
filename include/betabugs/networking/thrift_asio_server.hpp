@@ -35,6 +35,8 @@ namespace networking{
 *   void before_process(boost::shared_ptr<apache::thrift::protocol::TProtocol> output_protocol);
 *   void after_process();
 *   @endcode
+*
+*   or you can simply inherit your server side handler from thrift_asio_connection_management_mixin
 * */
 template <typename HandlerType>
 class thrift_asio_server

@@ -19,12 +19,14 @@
 #include <betabugs/networking/thrift_asio_server.hpp>
 #include <betabugs/networking/thrift_asio_client_transport.hpp>
 #include <betabugs/networking/thrift_asio_client.hpp>
+#include <betabugs/networking/thrift_asio_connection_management_mixin.hpp>
 #include <thread>
 #include <future>
 
 
 class asynchronous_server_handler : public test::asynchronous_serverIf
 									, public betabugs::networking::thrift_asio_transport::event_handlers
+									, public betabugs::networking::thrift_asio_connection_management_mixin<test::asynchronous_clientClient>
 {
   public:
 	virtual void add(const int32_t a, const int32_t b) override
@@ -48,45 +50,6 @@ class asynchronous_server_handler : public test::asynchronous_serverIf
 	{
 		std::clog << "thrift_asio_transport::on_disconnected" << std::endl;
 	}
-
-	// functions called by thrift_asio_server
-	void on_client_connected(boost::shared_ptr<apache::thrift::protocol::TProtocol> output_protocol)
-	{
-		(void) output_protocol;
-		std::clog << "server: client connected" << std::endl;
-		clients_.insert(
-			std::make_pair(
-				output_protocol,
-				std::make_shared<test::asynchronous_clientClient>(output_protocol)
-			)
-		);
-	}
-
-	void on_client_disconnected(const boost::shared_ptr<apache::thrift::protocol::TProtocol>& output_protocol, const boost::system::error_code& ec)
-	{
-		std::clog << "client disconnected, reason: " << ec.message() << std::endl;
-		clients_.erase(output_protocol);
-	}
-
-	void before_process(boost::shared_ptr<apache::thrift::protocol::TProtocol> output_protocol)
-	{
-		auto pos = clients_.find(output_protocol);
-		assert(pos != clients_.end());
-		current_client_ = pos->second;
-	}
-
-	void after_process()
-	{
-		current_client_.reset();
-	}
-
-  private:
-	typedef boost::shared_ptr<apache::thrift::protocol::TProtocol> protocol_ptr;
-	typedef std::shared_ptr<test::asynchronous_clientClient> client_ptr;
-	typedef std::map<protocol_ptr, client_ptr> Clients;
-	Clients clients_;
-
-	client_ptr current_client_;
 };
 
 
@@ -107,6 +70,7 @@ class asynchronous_client_handler : public betabugs::networking::thrift_asio_cli
 
 	/// implementation of test::asynchronous_clientIf
 	int32_t last_result = 0;
+
 	virtual void on_added(const int32_t result) override
 	{
 		last_result = result;
@@ -150,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_asynchrounous_basic)
 			client_handler.update();
 		}
 
-		if(client_handler.last_result != 0)
+		if (client_handler.last_result != 0)
 		{
 			BOOST_CHECK_EQUAL(client_handler.last_result, 42);
 			break;
