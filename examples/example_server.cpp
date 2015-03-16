@@ -5,6 +5,7 @@
 #include <betabugs/networking/thrift_asio_server.hpp>
 #include <chat_server.h>
 #include <chat_client.h>
+#include <thread> // for sleep
 
 class chat_server_handler
 	: public example::chat::chat_serverIf
@@ -122,6 +123,29 @@ class chat_server_handler
 	session_ptr current_session_;
 };
 
+
+/// This is the simple version that blocks.
+void the_blocking_version(boost::asio::io_service& io_service)
+{
+	io_service.run();
+}
+
+
+/*! this is why we went through all this efford. You're in control of the event lopp. huray!!!
+ * this version is more suitable for realtime applications
+ * */
+void the_non_blocking_loop(boost::asio::io_service& io_service)
+{
+	while(true)
+	{
+		while (io_service.poll_one());
+
+		// do some other work, e.g. sleep
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	(void) argc;
@@ -140,12 +164,10 @@ int main(int argc, char* argv[])
 
 	server.serve(io_service, processor, handler, 1528);
 
-	while (true)
-	{
-		while (io_service.poll_one());
-		sleep(1);
-		std::clog << "loop" << std::endl;
-	}
+	the_blocking_version(io_service);
+
+	/// this version is more suitable for realtime applications
+	//the_non_blocking_loop(io_service);
 
 	return 0;
 }

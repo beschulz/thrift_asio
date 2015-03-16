@@ -8,6 +8,7 @@
 #include <chat_client.h>
 #include <chat_server.h>
 #include <boost/asio.hpp>
+#include <thread>
 
 
 class chat_client_handler : public betabugs::networking::thrift_asio_client<
@@ -17,11 +18,12 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 >
 {
   public:
-	/*using betabugs::networking::thrift_asio_client<
+	using betabugs::networking::thrift_asio_client<
 		example::chat::chat_serverClient,
 		example::chat::chat_clientProcessor,
 		example::chat::chat_clientIf
-	>::thrift_asio_client;*/
+	>::thrift_asio_client;
+
 	chat_client_handler(
 		boost::asio::io_service& io_service,
 		const std::string& host_name,
@@ -85,12 +87,12 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 		boost::asio::async_read_until(stdin_, input_buffer_, '\n',
 			[this](const boost::system::error_code& ec, std::size_t length)
 			{
-				if(!ec && length>1)
+				if (!ec && length > 1)
 				{
 					std::string line;
 					std::getline(std::istream(&input_buffer_), line);
 
-					if(!line.empty())
+					if (!line.empty())
 						client_.set_user_name(line);
 					else
 						read_username();
@@ -104,14 +106,14 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 		std::cout << "broadcast message: " << std::endl;
 		// Read a line of input entered by the user.
 		boost::asio::async_read_until(stdin_, input_buffer_, '\n',
-			[this](const boost::system::error_code& ec, std::size_t length)
+			[this](const boost::system::error_code& ec, std::size_t)
 			{
-				if(!ec)
+				if (!ec)
 				{
 					std::string line;
 					std::getline(std::istream(&input_buffer_), line);
 
-					if(!line.empty())
+					if (!line.empty())
 						client_.broadcast_message(line);
 
 					// start over
@@ -122,6 +124,42 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 	}
 };
 
+/* this is the blocking version of the event loop
+*
+* this unfortunately causes high cpu load because of
+* a (suspected) bug in boost::asio::posix::stream_descriptor
+* when used with kevent.
+* */
+void the_blocking_loop(boost::asio::io_service& io_service, chat_client_handler& handler)
+{
+	while (true)
+	{
+		boost::system::error_code ec;
+		while (io_service.run_one(ec)) // run_one blocks until there is new data
+		{
+			if (ec) handler.on_error(ec);
+			else handler.update();
+		}
+	}
+}
+
+void the_non_blocking_loop(boost::asio::io_service& io_service, chat_client_handler& handler)
+{
+	while (true)
+	{
+		boost::system::error_code ec;
+		while (io_service.poll_one(ec))
+		{
+			if (ec) handler.on_error(ec);
+			else handler.update();
+		}
+
+		// do some other work. e.g. sleep
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	(void) argc;
@@ -130,26 +168,14 @@ int main(int argc, char* argv[])
 	std::string host_name = "127.0.0.1";
 	std::string service_name = "1528";
 
-	{
-		boost::asio::io_service io_service;
-		boost::asio::io_service::work work(io_service);
+	boost::asio::io_service io_service;
+	boost::asio::io_service::work work(io_service);
 
-		chat_client_handler handler(io_service, host_name, service_name);
+	chat_client_handler handler(io_service, host_name, service_name);
 
-		while (true)
-		{
-			boost::system::error_code ec;
-			while (io_service.poll_one(ec))
-			{
-				if (ec) handler.on_error(ec);
-			}
+	the_non_blocking_loop(io_service, handler);
 
-			handler.update();
-
-			//sleep(1);
-			//std::clog << "loop" << std::endl;
-		}
-	}
+	//the_blocking_loop(io_service, handler);
 
 	return 0;
 }
