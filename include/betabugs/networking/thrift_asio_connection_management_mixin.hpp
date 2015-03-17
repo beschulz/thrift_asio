@@ -58,6 +58,7 @@ class thrift_asio_connection_management_mixin
 		(void)ec;
 		assert( clients_.find(output_protocol) != clients_.end() );
 		clients_.erase(output_protocol);
+		assert( clients_.find(output_protocol) == clients_.end() );
 	}
 
 	/// sets client associated with output_protocol as the current_client_
