@@ -74,10 +74,10 @@ class thrift_asio_client
 	}
 
 	/// reconnect in seconds seconds
-	void reconnect_in(float seconds)
+	void reconnect_in(const boost::posix_time::time_duration& duration)
 	{
 		auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
-		timer->expires_from_now(boost::posix_time::seconds(seconds));
+		timer->expires_from_now(duration);
 		timer->async_wait(
 			[timer, this](const boost::system::error_code& ec)
 			{

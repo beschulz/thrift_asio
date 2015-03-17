@@ -61,7 +61,7 @@ class chat_client_handler : public betabugs::networking::thrift_asio_client<
 	virtual void on_error(const boost::system::error_code& ec) override
 	{
 		std::clog << "!! error: " << ec.message() << std::endl;
-		this->reconnect_in(1.0f);
+		this->reconnect_in(boost::posix_time::seconds(1));
 	}
 
 	virtual void on_connected() override
