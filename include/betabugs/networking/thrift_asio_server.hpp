@@ -72,7 +72,7 @@ class thrift_asio_server
 		boost::asio::io_service& io_service,
 		TProcessor& processor,
 		Handler_ptr handler,
-		short port
+		unsigned short port
 	)
 	{
 		using boost::asio::ip::tcp;
