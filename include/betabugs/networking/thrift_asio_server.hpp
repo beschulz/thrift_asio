@@ -49,6 +49,8 @@ class thrift_asio_server
 	typedef apache::thrift::protocol::TBinaryProtocol TBinaryProtocol;
 
   public:
+	typedef std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor_ptr;
+
 	/*!
 	* call this to start listening for incoming connections.
 	* This call is non blocking. To actually service the clients,
@@ -67,8 +69,11 @@ class thrift_asio_server
 	* the thread that is calling call_me_once_per_frame(). This means, you'll
 	* need no (or a lot less) locking. This is much more suitable for a "realtime"
 	* environment.
+	*
+	* @returns acceptor_ptr, so that you can stop listening
+	*
 	* */
-	static void serve(
+	static acceptor_ptr serve(
 		boost::asio::io_service& io_service,
 		TProcessor& processor,
 		Handler_ptr handler,
@@ -84,6 +89,7 @@ class thrift_asio_server
 		);
 
 		start_accept(io_service, acceptor, processor, handler);
+		return acceptor;
 	}
 
   private:
@@ -110,10 +116,10 @@ class thrift_asio_server
 				{
 					std::clog << "client connected" << std::endl;
 					on_accept(io_service, socket, processor, handler);
-				}
 
-				// Note: this will accept new connections without any bounds
-				start_accept(io_service, acceptor, processor, handler);
+					// Note: this will accept new connections without any bounds
+					start_accept(io_service, acceptor, processor, handler);
+				}
 			}
 		);
 	}
@@ -189,8 +195,6 @@ class thrift_asio_server
 				}
 				else
 				{
-					std::clog << "got frame bytes: " << frame_bytes->size() << std::endl;
-
 					auto input_transport = boost::make_shared<TMemoryBuffer>(frame_bytes->data(), frame_bytes->size());
 					auto input_protocol = boost::make_shared<TBinaryProtocol>(input_transport);
 
