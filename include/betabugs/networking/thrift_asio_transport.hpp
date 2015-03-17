@@ -12,6 +12,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/make_shared.hpp>
+#include <deque>
 
 namespace betabugs {
 namespace networking {
@@ -79,18 +80,14 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 
 		auto bytes_to_copy = std::min<size_t>(len, incomming_bytes_.size());
 
-		std::copy(
-			incomming_bytes_.begin(),
-			incomming_bytes_.begin() + bytes_to_copy,
-			buf
-		);
+		std::copy_n(incomming_bytes_.begin(), bytes_to_copy, buf);
 
 		incomming_bytes_.erase(
 			incomming_bytes_.begin(),
-			incomming_bytes_.begin() + bytes_to_copy
+			incomming_bytes_.begin() + std::string::difference_type(bytes_to_copy)
 		);
 
-		return bytes_to_copy;
+		return uint32_t(bytes_to_copy);
 	}
 
 	/// the number of bytes, that have been received on not yet read()
@@ -227,7 +224,7 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	event_handlers* event_handlers_; ///< handles events like on_error, etc.
 
   private:
-	std::string incomming_bytes_;
+	std::deque<uint8_t> incomming_bytes_;
 
 	void on_receive(
 		const boost::system::error_code& ec,
@@ -241,9 +238,11 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 		}
 		else
 		{
-			incomming_bytes_ += std::string(
+			incomming_bytes_.insert(
+				incomming_bytes_.end(),
 				begin(*receive_buffer),
-				begin(*receive_buffer) + bytes_transferred);
+				begin(*receive_buffer) + bytes_transferred
+			);
 
 			socket_->async_receive(
 				boost::asio::buffer(*receive_buffer, sizeof(receive_buffer)),
