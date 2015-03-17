@@ -51,5 +51,5 @@ script:
   - cd build || exit $?
   - cmake .. || exit $?
   - make all || exit $?
-  # - ./test_all || exit $?
+  - LD_LIBRARY_PATH=/usr/local/lib ./test_all || exit $?
   - cd .. || exit $?
