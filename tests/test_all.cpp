@@ -8,5 +8,5 @@
 #	include <boost/test/unit_test.hpp>
 #endif /* BOOST_TEST_MODULE */
 
-#include "test_synchronous.cpp"
 #include "test_asynchronous.cpp"
+#include "test_synchronous.cpp"

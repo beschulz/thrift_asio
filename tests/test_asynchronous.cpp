@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(test_asynchrounous_basic)
 
 
 	int num_iterations = 5000 / 100;
-	while (num_iterations--)
+	while (--num_iterations)
 	{
 		while (io_service.poll_one())
 		{

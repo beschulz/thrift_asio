@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_synchrounous_basic)
 	});
 
 	int num_iterations = 5000/100;
-	while (num_iterations--)
+	while (--num_iterations)
 	{
 		auto status = client_thread.wait_for(std::chrono::milliseconds(100));
 
