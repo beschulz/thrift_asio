@@ -76,10 +76,10 @@ class thrift_asio_client
 	/// reconnect in seconds seconds
 	void reconnect_in(const boost::posix_time::time_duration& duration)
 	{
-		auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
-		timer->expires_from_now(duration);
-		timer->async_wait(
-			[timer, this](const boost::system::error_code& ec)
+		reconnect_timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
+		reconnect_timer->expires_from_now(duration);
+		reconnect_timer->async_wait(
+			[this](const boost::system::error_code& ec)
 			{
 				if (ec) on_error(ec);
 				else transport_->open();
@@ -93,6 +93,8 @@ class thrift_asio_client
 
 	boost::shared_ptr<thrift_asio_client_transport> transport_;
 	boost::shared_ptr<apache::thrift::protocol::TProtocol> protocol_;
+
+	std::shared_ptr<boost::asio::deadline_timer> reconnect_timer;
   protected:
 	ClientType client_; ///< the client used to communicate with the server
 };
