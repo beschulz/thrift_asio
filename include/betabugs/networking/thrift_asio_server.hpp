@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <boost/smart_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <thrift/TProcessor.h>
 #include <thrift/transport/TBufferTransports.h>
