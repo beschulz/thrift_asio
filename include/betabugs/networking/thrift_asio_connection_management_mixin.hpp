@@ -44,10 +44,12 @@ class thrift_asio_connection_management_mixin
 	{
 		assert( clients_.find(output_protocol) == clients_.end() );
 
+		current_client_ = std::make_shared<ClientType>(output_protocol);
+
 		clients_.insert(
 			std::make_pair(
 				output_protocol,
-				std::make_shared<ClientType>(output_protocol)
+				current_client_
 			)
 		);
 	}
