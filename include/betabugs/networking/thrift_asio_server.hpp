@@ -11,6 +11,7 @@
 #include <boost/asio.hpp>
 #include <thrift/TProcessor.h>
 #include <thrift/transport/TBufferTransports.h>
+#include <thrift/transport/TZlibTransport.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <iostream>
 #include "./thrift_asio_transport.hpp"
@@ -22,6 +23,7 @@ namespace networking{
 * Use this class on the server
 *
 * \tparam HandlerType the type of the implementation of a handler.
+* \tparam use_compression whether to wrap the transport into a TZlibTransport or not
 *
 * \section HandlerType HandlerType
 *   First of all the HandlerType must work with the auto-generated processor you're using.
@@ -38,7 +40,7 @@ namespace networking{
 *
 *   or you can simply inherit your server side handler from thrift_asio_connection_management_mixin
 * */
-template <typename HandlerType>
+template <typename HandlerType, bool use_compression=false>
 class thrift_asio_server
 {
 	typedef boost::shared_ptr<HandlerType> Handler_ptr;
@@ -46,6 +48,8 @@ class thrift_asio_server
 	// forward typedefs to minimize pollution
 	typedef apache::thrift::TProcessor TProcessor;
 	typedef apache::thrift::transport::TMemoryBuffer TMemoryBuffer;
+	typedef apache::thrift::transport::TZlibTransport TZlibTransport;
+	typedef apache::thrift::transport::TFramedTransport TFramedTransport;
 	typedef apache::thrift::protocol::TBinaryProtocol TBinaryProtocol;
 
   public:
@@ -136,7 +140,10 @@ class thrift_asio_server
 
 		// construct the output_protocol and call the handler
 		auto t1 = boost::make_shared<thrift_asio_transport>(socket, handler.get());
-		auto t2 = boost::make_shared<apache::thrift::transport::TFramedTransport>(t1);
+		boost::shared_ptr<apache::thrift::transport::TTransport> t2
+			= boost::make_shared<TFramedTransport>(t1);
+		if (use_compression)
+			t2 = boost::make_shared<TZlibTransport>(t2, 128, 1024, 128, 1024, 9);
 		auto output_protocol = boost::make_shared<TBinaryProtocol>(t2);
 		handler->on_client_connected(output_protocol);
 
@@ -195,7 +202,10 @@ class thrift_asio_server
 				}
 				else
 				{
-					auto input_transport = boost::make_shared<TMemoryBuffer>(frame_bytes->data(), frame_bytes->size());
+					boost::shared_ptr<apache::thrift::transport::TTransport> input_transport
+						= boost::make_shared<TMemoryBuffer>(frame_bytes->data(), frame_bytes->size());
+					//if(use_compression)
+					//	input_transport = boost::make_shared<TZlibTransport>(input_transport);
 					auto input_protocol = boost::make_shared<TBinaryProtocol>(input_transport);
 
 					void* connection_context = nullptr;
