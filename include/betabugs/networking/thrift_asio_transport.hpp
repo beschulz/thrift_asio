@@ -25,6 +25,8 @@ namespace networking {
 * */
 class thrift_asio_transport : public apache::thrift::transport::TVirtualTransport<thrift_asio_transport>
 {
+	static constexpr size_t BUFFER_SIZE = 1024;
+
   public:
 	/*!
 	* Interface for handling transport events
@@ -111,30 +113,38 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	*/
 	void write(const uint8_t* buf, uint32_t len)
 	{
-		auto holder = boost::make_shared<std::string>(buf, buf + len);
+		outbound_messages_.push_back({buf, buf+len});
+		if (outbound_messages_.size() == 1)
+		{
+			async_write_one();
+		}// the other case is handled in the completion handler in async_write_one
+	}
 
+	void async_write_one()
+	{
 		boost::asio::async_write(
 			*socket_,
-			boost::asio::buffer(holder->data(), holder->size()),
-			[this, holder](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+			boost::asio::buffer(outbound_messages_.front().data(), outbound_messages_.front().size()),
+			[this](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
 			{
 				if (ec)
 				{
 					event_handlers_->on_error(ec);
 					this->close();
 				}
+				else
+				{
+					// we've sent it, remove from queue
+					outbound_messages_.pop_front();
+
+					if (!outbound_messages_.empty())
+					{
+						async_write_one();
+					}
+				}
 			}
 		);
 	}
-
-	/*const uint8_t* borrow(uint8_t* buf, uint32_t* len)
-	{
-		return nullptr;
-	}
-
-	void consume(uint32_t len)
-	{
-	}*/
 
 	/// return true unless an error occured or the transport was closed
 	virtual bool isOpen() override
@@ -166,10 +176,10 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 		state_ = OPEN;
 
 		socket_->set_option(boost::asio::ip::tcp::no_delay(true));
-		auto receive_buffer = std::make_shared<std::array<char, 1024>>();
+		auto receive_buffer = std::make_shared<std::array<char, BUFFER_SIZE>>();
 
 		socket_->async_receive(
-			boost::asio::buffer(*receive_buffer, 1024),
+			boost::asio::buffer(*receive_buffer, receive_buffer->size()),
 			0,
 			[this, receive_buffer]
 				(const boost::system::error_code& ec, std::size_t bytes_transferred)
@@ -193,6 +203,7 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 		event_handlers_->on_disconnected();
 		state_ = CLOSED;
 		incomming_bytes_.clear();
+		outbound_messages_.clear();
 	}
 
 
@@ -225,10 +236,11 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 
   private:
 	std::deque<uint8_t> incomming_bytes_;
+	std::list<std::string> outbound_messages_;
 
 	void on_receive(
 		const boost::system::error_code& ec,
-		std::shared_ptr<std::array<char, 1024>> receive_buffer,
+		std::shared_ptr<std::array<char, BUFFER_SIZE>> receive_buffer,
 		std::size_t bytes_transferred)
 	{
 		if (ec)
@@ -244,8 +256,10 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 				begin(*receive_buffer) + bytes_transferred
 			);
 
+			//std::clog << "got " << bytes_transferred << " bytes, avail=" << available_bytes() << std::endl;
+
 			socket_->async_receive(
-				boost::asio::buffer(*receive_buffer, sizeof(receive_buffer)),
+				boost::asio::buffer(*receive_buffer, receive_buffer->size()),
 				0,
 				[this, receive_buffer](const boost::system::error_code& ec,
 					std::size_t bytes_transferred)
