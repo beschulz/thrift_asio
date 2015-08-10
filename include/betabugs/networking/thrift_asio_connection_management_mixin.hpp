@@ -76,6 +76,8 @@ class thrift_asio_connection_management_mixin
 	{
 		current_client_.reset();
 	}
+
+    virtual ~thrift_asio_connection_management_mixin(){}
   protected:
 	/// used as key_type in the client_map
 	typedef boost::shared_ptr<apache::thrift::protocol::TProtocol> protocol_ptr;

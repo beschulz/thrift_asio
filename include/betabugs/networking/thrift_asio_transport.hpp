@@ -33,6 +33,8 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 	* */
 	struct event_handlers
 	{
+        virtual ~event_handlers(){}
+
 		/// Gets invoked when an error occurred while communication over the transport.
 		virtual void on_error(const boost::system::error_code& ec)
 		{
