@@ -9,6 +9,7 @@
 
 #include <thrift/transport/TVirtualTransport.h>
 //#include <boost/asio.hpp>
+#include <boost/smart_ptr/enable_shared_from_this.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/make_shared.hpp>
@@ -23,7 +24,9 @@ namespace networking {
 * If you want name resolution, it might be easier to use thrift_asio_client_transport
 *
 * */
-class thrift_asio_transport : public apache::thrift::transport::TVirtualTransport<thrift_asio_transport>
+class thrift_asio_transport
+    : public apache::thrift::transport::TVirtualTransport<thrift_asio_transport>
+    , public boost::enable_shared_from_this<thrift_asio_transport>
 {
 	static constexpr size_t BUFFER_SIZE = 1024;
 
@@ -54,14 +57,20 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 
 	/// a shared_ptr to a tcp socket
 	typedef std::shared_ptr<boost::asio::ip::tcp::socket> socket_ptr;
+    typedef std::weak_ptr<boost::asio::ip::tcp::socket> socket_weak_ptr;
 
-	/// creates a thrift_asio_transport from a socket_ptr
+    /// creates a thrift_asio_transport from a socket_ptr
 	thrift_asio_transport(socket_ptr socket, event_handlers* event_handlers)
 		: socket_(socket)
 		, event_handlers_(event_handlers)
 	{
 		assert(event_handlers);
 	};
+
+    virtual ~thrift_asio_transport()
+    {
+        assert(state_ == CLOSED);
+    }
 
 
 	/// Attempt to read up to the specified number of bytes into the string.
@@ -124,26 +133,28 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 
 	void async_write_one()
 	{
+        auto self = shared_from_this();
+
 		boost::asio::async_write(
 			*socket_,
 			boost::asio::buffer(outbound_messages_.front().data(), outbound_messages_.front().size()),
-			[this](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+			[this, self](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
 			{
-				if (ec)
-				{
-					event_handlers_->on_error(ec);
-					this->close();
-				}
-				else
-				{
-					// we've sent it, remove from queue
-					outbound_messages_.pop_front();
+                if (ec)
+                {
+                    event_handlers_->on_error(ec);
+                    this->close();
+                }
+                else
+                {
+                    // we've sent it, remove from queue
+                    outbound_messages_.pop_front();
 
-					if (!outbound_messages_.empty())
-					{
-						async_write_one();
-					}
-				}
+                    if (!outbound_messages_.empty())
+                    {
+                        async_write_one();
+                    }
+                }
 			}
 		);
 	}
@@ -201,6 +212,7 @@ class thrift_asio_transport : public apache::thrift::transport::TVirtualTranspor
 			if (ec) event_handlers_->on_error(ec);
 			socket_->close(ec);
 			if (ec) event_handlers_->on_error(ec);
+            socket_.reset();
 		}
 		event_handlers_->on_disconnected();
 		state_ = CLOSED;
