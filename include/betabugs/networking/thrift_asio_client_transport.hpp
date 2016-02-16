@@ -42,8 +42,6 @@ class thrift_asio_client_transport : public thrift_asio_transport
 	virtual void open() override
 	{
 		using boost::asio::ip::tcp;
-		//this->close();
-		state_ = RESOLVING;
 		resolver_.cancel();
 		resolver_.async_resolve
 			(
@@ -58,7 +56,6 @@ class thrift_asio_client_transport : public thrift_asio_transport
 				}
 				else
 				{
-					state_ = CONNECTING;
 					boost::asio::async_connect
 						(
 							*socket_,

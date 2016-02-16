@@ -69,7 +69,6 @@ class thrift_asio_transport
 
     virtual ~thrift_asio_transport()
     {
-        assert(state_ == CLOSED);
     }
 
 
@@ -162,7 +161,7 @@ class thrift_asio_transport
 	/// return true unless an error occured or the transport was closed
 	virtual bool isOpen() override
 	{
-		return state_ == OPEN;
+		return socket_ && socket_->is_open();
 	}
 
 	/// Checks wether this transport is closed.
@@ -173,7 +172,7 @@ class thrift_asio_transport
 	*/
 	bool isClosed()
 	{
-		return state_ == CLOSED;
+		return !socket_ || !socket_->is_open();
 	}
 
 	/// return true, if there is data available to be processed
@@ -186,7 +185,6 @@ class thrift_asio_transport
 	virtual void open() override
 	{
 		event_handlers_->on_connected();
-		state_ = OPEN;
 
 		socket_->set_option(boost::asio::ip::tcp::no_delay(true));
 		auto receive_buffer = std::make_shared<std::array<char, BUFFER_SIZE>>();
@@ -205,17 +203,16 @@ class thrift_asio_transport
 	/// closes the transport
 	virtual void close() override
 	{
-		if (state_ == OPEN)
+		if (isOpen())
 		{
 			boost::system::error_code ec;
 			socket_->cancel(ec);
 			if (ec) event_handlers_->on_error(ec);
 			socket_->close(ec);
 			if (ec) event_handlers_->on_error(ec);
-            socket_.reset();
+            //socket_.reset();
 		}
 		event_handlers_->on_disconnected();
-		state_ = CLOSED;
 		incomming_bytes_.clear();
 		outbound_messages_.clear();
 	}
@@ -235,16 +232,6 @@ class thrift_asio_transport
 	}
 
   protected:
-	/// enum to represent the state-machine of the connection
-	enum State
-	{
-		CLOSED,      ///< the transport is closed
-		CONNECTING,  ///< the transport is currently connecting
-		RESOLVING,   ///< we're currently trying to resolve host_name:service_name
-		OPEN         ///< the transport is open and ready for communication
-	};
-
-	State state_ = CLOSED; ///< the state of this transport
 	socket_ptr socket_; ///< the underlying socket
 	event_handlers* event_handlers_; ///< handles events like on_error, etc.
 
