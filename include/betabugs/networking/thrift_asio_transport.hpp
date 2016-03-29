@@ -134,6 +134,14 @@ class thrift_asio_transport
 	{
         auto self = shared_from_this();
 
+		// consolidate outbound messages
+		std::string msg;
+		for(const auto& x : outbound_messages_)
+		{
+			msg += x;
+		}
+		outbound_messages_ = {msg};
+
 		boost::asio::async_write(
 			*socket_,
 			boost::asio::buffer(outbound_messages_.front().data(), outbound_messages_.front().size()),
