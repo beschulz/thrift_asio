@@ -132,17 +132,16 @@ class thrift_asio_transport
 
 	void async_write_one()
 	{
-        auto self = shared_from_this();
-
 		// consolidate outbound messages
-		std::string msg;
+		auto msg = std::make_shared<std::string>();
 		for(const auto& x : outbound_messages_)
 		{
-			msg += x;
+            (*msg) += x;
 		}
-		outbound_messages_ = {msg};
+		outbound_messages_.clear();
 
-		boost::asio::async_write(
+        auto self = shared_from_this();
+        boost::asio::async_write(
 			*socket_,
 			boost::asio::buffer(outbound_messages_.front().data(), outbound_messages_.front().size()),
 			[this, self](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
@@ -154,9 +153,6 @@ class thrift_asio_transport
                 }
                 else
                 {
-                    // we've sent it, remove from queue
-                    outbound_messages_.pop_front();
-
                     if (!outbound_messages_.empty())
                     {
                         async_write_one();
