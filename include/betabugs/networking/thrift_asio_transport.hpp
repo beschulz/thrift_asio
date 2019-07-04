@@ -144,7 +144,7 @@ class thrift_asio_transport
         boost::asio::async_write(
 			*socket_,
 			boost::asio::buffer(msg->data(), msg->size()),
-			[this, self](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+			[this, self, msg](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
 			{
                 if (ec)
                 {
