@@ -124,7 +124,7 @@ class thrift_asio_transport
 	void write(const uint8_t* buf, uint32_t len)
 	{
 		outbound_messages_.push_back({buf, buf+len});
-		if (outbound_messages_.size() == 1)
+		if (outbound_messages_.size() == 1 && !is_currently_writing_)
 		{
 			async_write_one();
 		}// the other case is handled in the completion handler in async_write_one
@@ -141,11 +141,14 @@ class thrift_asio_transport
 		outbound_messages_.clear();
 
         auto self = shared_from_this();
+        assert(!is_currently_writing_);
+        is_currently_writing_ = true;
         boost::asio::async_write(
 			*socket_,
 			boost::asio::buffer(msg->data(), msg->size()),
 			[this, self, msg](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
 			{
+                is_currently_writing_ = false;
                 if (ec)
                 {
                     event_handlers_->on_error(ec);
@@ -242,6 +245,7 @@ class thrift_asio_transport
   private:
 	std::deque<uint8_t> incomming_bytes_;
 	std::list<std::string> outbound_messages_;
+	bool is_currently_writing_ = false;
 
 	void on_receive(
 		const boost::system::error_code& ec,
